@@ -9,6 +9,9 @@ builder.Services.AddDbContext<DataContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
+    p.WithMethods("").WithHeaders("").WithOrigins("*")));
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
