@@ -29,4 +29,18 @@ public class UsersController : ControllerBase
     {
         return await _context.Users.FindAsync(id);
     }
+    
+    [HttpGet("test")]
+    public IActionResult Test()
+    {
+        var response = new { Message = "Hello world" };
+        return Ok(response);
+    }
+    
+    [HttpGet("/")]
+    public IActionResult Test2()
+    {
+        var response = "hello world";
+        return Ok(response);
+    }
 }

@@ -10,11 +10,16 @@ builder.Services.AddDbContext<DataContext>(opt =>
 });
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
-    p.WithMethods("").WithHeaders("").WithOrigins("*")));
+    p.WithMethods("*").WithHeaders("*").WithOrigins("*")));
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+
+//app.UseHttpsRedirection();
+
+app.UseCors();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
