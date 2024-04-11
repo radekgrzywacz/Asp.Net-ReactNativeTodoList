@@ -13,7 +13,7 @@ export default Calendar;
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: '#EEEEEE',
       alignItems: 'center',
       justifyContent: 'center',
     },
