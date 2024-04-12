@@ -1,4 +1,4 @@
-import { ActivityIndicator, View, Text, StyleSheet } from "react-native";
+import { ActivityIndicator, View, Text, StyleSheet, Platform } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
 const Home = () => {
@@ -8,7 +8,7 @@ const Home = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:5000/api/users/1")
+      .get(Platform.OS === "ios" ? "http://localhost/api/users/1" : "http://10.0.2.2:5000/api/users/1")
       .then((response) => {
         if (response.data) {
           setUser(response.data);
@@ -23,7 +23,7 @@ const Home = () => {
       setLoading(false);
   }, []);
 
-  if (!setLoading) {
+  if (loading) {
     return (
       <View style={[styles.container]}>
         <ActivityIndicator size="large" />
@@ -31,9 +31,10 @@ const Home = () => {
       </View>
     );
   }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hi {user.userName}!</Text>
+      <Text style={styles.text}>Hi {user.userName !== null ? user.userName : 'there'}!</Text>
     </View>
   );
 };

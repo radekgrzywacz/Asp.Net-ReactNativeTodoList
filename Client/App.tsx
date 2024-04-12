@@ -72,7 +72,7 @@ const AppNavigator = () => {
 };
 
 export default function App() {
-  const [isLogged] = useState(true);
+  const [isLogged] = useState(false);
   const [fontsLoaded] = useFonts({
     regular: require("./assets/fonts/Poppins-Regular.ttf"),
     bold: require("./assets/fonts/Poppins-Bold.ttf"),
