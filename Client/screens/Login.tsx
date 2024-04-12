@@ -36,23 +36,27 @@ const Login = () => {
           onChangeText={onChangePassword}
           secureTextEntry={true}
         />
-        <View style={styles.forgotPasswordText}>
-          <TouchableOpacity
-            onPress={() => console.log("go to forgot password screen")}
+        <TouchableOpacity
+          onPress={() => console.log("go to forgot password screen")}
+        >
+          <Text
+            style={styles.text}
+            suppressHighlighting={true} // Add this prop to suppress the highlight
           >
-            <Text
-              style={styles.text}
-              suppressHighlighting={true} // Add this prop to suppress the highlight
-            >
-              Forgot password?
-            </Text>
-          </TouchableOpacity>
-        </View>
+            Forgot password?
+          </Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.loginButton}
           onPress={() => console.log("Logged")}
         >
           <Text style={styles.loginButtonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.signinButton}
+          onPress={() => console.log("Going to sign in screen")}
+        >
+          <Text style={styles.signinButtonText}>Sign in</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -116,6 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 8,
     fontSize: 20,
+    backgroundColor: "#EEEEEE"
   },
   loginButton: {
     borderWidth: 2,
@@ -147,7 +152,35 @@ const styles = StyleSheet.create({
     color: "#EEEEEE",
     fontSize: 18,
   },
-  forgotPasswordText: {
-    
+  signinButton: {
+    //borderWidth: 2,
+    borderRadius: 20,
+    //borderColor: "#76885B",
+    //backgroundColor: "#EEEEEE",
+    width: "40%",
+    height: "13%",
+    alignItems: "center",
+    justifyContent: "center",
+    //padding: 4,
+    //marginTop: 4,
+    ...Platform.select({
+      android: {
+        elevation: 5,
+      },
+      ios: {
+        shadowOffset: {
+          width: 3,
+          height: 2,
+        },
+        shadowColor: "black",
+        shadowOpacity: 0.2,
+      },
+    }),
+  },
+  signinButtonText: {
+    fontFamily: "medium",
+    color: "#76885B",
+    fontSize: 18,
+    textAlign: "center"
   },
 });
