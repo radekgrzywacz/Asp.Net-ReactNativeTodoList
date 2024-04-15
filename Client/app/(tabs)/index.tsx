@@ -1,6 +1,7 @@
 import { ActivityIndicator, View, Text, StyleSheet, Platform } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
+
 const Home = () => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
