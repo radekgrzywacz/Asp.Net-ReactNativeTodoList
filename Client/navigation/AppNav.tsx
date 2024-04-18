@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, StatusBar } from 'react-native'
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import AuthNavigator from './AuthNavigator'
@@ -9,6 +9,7 @@ const AppNav = () => {
   const {authState, onLogout} = useAuth();
   return (
     <NavigationContainer>
+      <StatusBar backgroundColor="#EEEEEE" barStyle="default" />
       { authState?.authenticated ? <AppNavigator/> : <AuthNavigator/>}
     </NavigationContainer>
   )

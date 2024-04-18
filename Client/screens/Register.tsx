@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const Register = () => {
+const Register = ({ navigation }) => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,10 +31,19 @@ const Register = () => {
     } else {
       login();
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Ionicons
+            name="arrow-back-circle-outline"
+            size={35}
+            color="#627254"
+          />
+        </TouchableOpacity>
+      </View>
       <View style={styles.registerArea}>
         <Text style={styles.logoText}>The ultimate {"\n"}Todo app</Text>
         <Text style={[styles.text, { marginBottom: 20 }]}>
@@ -62,7 +71,12 @@ const Register = () => {
         <View
           style={[styles.registerInput, { marginBottom: 10, marginTop: 20 }]}
         >
-          <Ionicons style={{ marginTop: 2 }} name="person-outline" size={20} color="#616161"/>
+          <Ionicons
+            style={{ marginTop: 2 }}
+            name="person-outline"
+            size={20}
+            color="#616161"
+          />
           <TextInput
             style={styles.inputStyle}
             autoCapitalize="none"
@@ -73,10 +87,13 @@ const Register = () => {
             onChangeText={(text: string) => setUserName(text)}
           />
         </View>
-        <View
-          style={[styles.registerInput, { marginBottom: 10}]}
-        >
-          <Ionicons style={{ marginTop: 2 }} name="mail-outline" size={20} color="#616161"/>
+        <View style={[styles.registerInput, { marginBottom: 10 }]}>
+          <Ionicons
+            style={{ marginTop: 2 }}
+            name="mail-outline"
+            size={20}
+            color="#616161"
+          />
           <TextInput
             style={styles.inputStyle}
             autoCapitalize="none"
@@ -87,10 +104,13 @@ const Register = () => {
             onChangeText={(text: string) => setEmail(text)}
           />
         </View>
-        <View
-          style={[styles.registerInput, { marginBottom: 10}]}
-        >
-          <Ionicons style={{ marginTop: 2 }} name="key-outline" size={20} color="#616161"/>
+        <View style={[styles.registerInput, { marginBottom: 10 }]}>
+          <Ionicons
+            style={{ marginTop: 2 }}
+            name="key-outline"
+            size={20}
+            color="#616161"
+          />
           <TextInput
             style={styles.inputStyle}
             autoCapitalize="none"
@@ -107,6 +127,18 @@ const Register = () => {
           onPress={() => register()}
         >
           <Text style={styles.registerButtonText}>Register</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.footer}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Login")}
+        >
+          <Text
+            style={styles.text}
+            suppressHighlighting={true} // Add this prop to suppress the highlight
+          >
+            Already signed in? Log into your account!
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -207,5 +239,17 @@ const styles = StyleSheet.create({
     color: "#EEEEEE",
     fontSize: 18,
   },
-  
+  header: {
+    padding: 16,
+    flexDirection: "row",
+    alignSelf: "flex-start",
+    position: "relative",
+    right: 10,
+    top: 42,
+    marginBottom: 25,
+  },
+  footer: {
+    flexDirection: "row",
+    paddingBottom: 40
+  },
 });

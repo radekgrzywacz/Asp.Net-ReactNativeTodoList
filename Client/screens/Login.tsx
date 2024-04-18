@@ -27,6 +27,28 @@ const LoginScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.loginArea}>
         <Text style={styles.logoText}>The ultimate {"\n"}Todo app</Text>
+        <Text style={[styles.welcomeText, { marginBottom: 20 }]}>
+          Hi! We are glad to welcome you!
+        </Text>
+        <Text
+          style={{
+            fontFamily: "semibold",
+            fontSize: 24,
+            color: "#616161",
+          }}
+        >
+          Welcome back
+        </Text>
+        <Text
+          style={{
+            fontFamily: "medium",
+            fontSize: 16,
+            color: "#616161",
+            marginBottom: 1,
+          }}
+        >
+          Login to your account
+        </Text>
         <View style={[styles.loginInput, { marginBottom: 10, marginTop: 20 }]}>
           <Ionicons
             style={{ marginTop: 2 }}
@@ -95,6 +117,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  welcomeText: {
+    fontFamily: "regular",
+    padding: 6,
+    fontSize: 12,
+    color: "#616161",
+  },
   text: {
     fontFamily: "light",
     padding: 6,
@@ -112,7 +140,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 30,
     color: "#627254",
-    marginBottom: 30,
     ...Platform.select({
       android: {
         elevation: 5,
