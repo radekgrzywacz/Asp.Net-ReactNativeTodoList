@@ -9,42 +9,59 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useAuth } from "../context/AuthContext";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const {onLogin} = useAuth();
+  const { onLogin } = useAuth();
 
   const login = async () => {
     const result = await onLogin!(userName, password);
-    if(result && result.error) {
-      alert(result.msg)
+    if (result && result.error) {
+      alert(result.msg);
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.loginArea}>
         <Text style={styles.logoText}>The ultimate {"\n"}Todo app</Text>
-        <TextInput
-          style={[styles.loginInput, { marginBottom: 10 }]}
-          autoCapitalize="none"
-          autoComplete="off"
-          autoCorrect={false}
-          value={userName}
-          placeholder="Login"
-          onChangeText={(text: string) => setUserName(text)}
-        />
-        <TextInput
-          style={styles.loginInput}
-          autoCapitalize="none"
-          autoComplete="off"
-          autoCorrect={false}
-          value={password}
-          placeholder="Password"
-          onChangeText={(text: string) => setPassword(text)}
-          secureTextEntry={true}
-        />
+        <View style={[styles.loginInput, { marginBottom: 10, marginTop: 20 }]}>
+          <Ionicons
+            style={{ marginTop: 2 }}
+            name="person-outline"
+            size={20}
+            color="#616161"
+          />
+          <TextInput
+            style={styles.inputStyle}
+            autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect={false}
+            value={userName}
+            placeholder="Login"
+            onChangeText={(text: string) => setUserName(text)}
+          />
+        </View>
+        <View style={[styles.loginInput, { marginBottom: 10 }]}>
+          <Ionicons
+            style={{ marginTop: 2 }}
+            name="key-outline"
+            size={20}
+            color="#616161"
+          />
+          <TextInput
+            style={styles.inputStyle}
+            autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect={false}
+            value={password}
+            placeholder="Password"
+            onChangeText={(text: string) => setPassword(text)}
+            secureTextEntry={true}
+          />
+        </View>
         <TouchableOpacity
           onPress={() => console.log("go to forgot password screen")}
         >
@@ -55,15 +72,12 @@ const LoginScreen = ({navigation}) => {
             Forgot password?
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => login()}
-        >
+        <TouchableOpacity style={styles.loginButton} onPress={() => login()}>
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.signinButton}
-          onPress={() => navigation.navigate('Register')}
+          onPress={() => navigation.navigate("Register")}
         >
           <Text style={styles.signinButtonText}>Sign in</Text>
         </TouchableOpacity>
@@ -73,8 +87,6 @@ const LoginScreen = ({navigation}) => {
 };
 
 export default LoginScreen;
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -125,13 +137,14 @@ const styles = StyleSheet.create({
     marginBottom: "60%",
   },
   loginInput: {
+    flexDirection: "row",
     borderColor: "#627254",
     borderWidth: 2,
     width: "65%",
     borderRadius: 20,
     padding: 8,
-    fontSize: 20,
-    backgroundColor: "#EEEEEE"
+    justifyContent: "center",
+    backgroundColor: "#EEEEEE",
   },
   loginButton: {
     borderWidth: 2,
@@ -139,10 +152,10 @@ const styles = StyleSheet.create({
     borderColor: "#76885B",
     backgroundColor: "#76885B",
     width: "40%",
-    height: "13%",
+    height: "10%",
     alignItems: "center",
     justifyContent: "center",
-    padding: 6,
+    padding: 4,
     marginTop: 7,
     ...Platform.select({
       android: {
@@ -169,7 +182,7 @@ const styles = StyleSheet.create({
     //borderColor: "#76885B",
     //backgroundColor: "#EEEEEE",
     width: "40%",
-    height: "13%",
+    height: "10%",
     alignItems: "center",
     justifyContent: "center",
     //padding: 4,
@@ -190,5 +203,10 @@ const styles = StyleSheet.create({
     color: "#76885B",
     fontSize: 18,
     textAlign: "center",
+  },
+  inputStyle: {
+    flex: 1,
+    fontSize: 20,
+    marginLeft: 7,
   },
 });
