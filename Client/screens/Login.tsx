@@ -7,12 +7,21 @@ import {
   TextInput,
   Platform,
   TouchableOpacity,
-  Button,
 } from "react-native";
+import { useAuth } from "../context/AuthContext";
 
-const Login = () => {
-  const [login, onChangeLogin] = useState("");
-  const [password, onChangePassword] = useState("");
+const LoginScreen = ({navigation}) => {
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const {onLogin} = useAuth();
+
+  const login = async () => {
+    const result = await onLogin!(userName, password);
+    if(result && result.error) {
+      alert(result.msg)
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.loginArea}>
@@ -22,9 +31,9 @@ const Login = () => {
           autoCapitalize="none"
           autoComplete="off"
           autoCorrect={false}
-          value={login}
+          value={userName}
           placeholder="Login"
-          onChangeText={onChangeLogin}
+          onChangeText={(text: string) => setUserName(text)}
         />
         <TextInput
           style={styles.loginInput}
@@ -33,7 +42,7 @@ const Login = () => {
           autoCorrect={false}
           value={password}
           placeholder="Password"
-          onChangeText={onChangePassword}
+          onChangeText={(text: string) => setPassword(text)}
           secureTextEntry={true}
         />
         <TouchableOpacity
@@ -48,13 +57,13 @@ const Login = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => console.log("Logged")}
+          onPress={() => login()}
         >
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.signinButton}
-          onPress={() => console.log("Going to sign in screen")}
+          onPress={() => navigation.navigate('Register')}
         >
           <Text style={styles.signinButtonText}>Sign in</Text>
         </TouchableOpacity>
@@ -63,7 +72,9 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginScreen;
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -164,9 +175,6 @@ const styles = StyleSheet.create({
     //padding: 4,
     //marginTop: 4,
     ...Platform.select({
-      android: {
-        elevation: 5,
-      },
       ios: {
         shadowOffset: {
           width: 3,
@@ -181,6 +189,6 @@ const styles = StyleSheet.create({
     fontFamily: "medium",
     color: "#76885B",
     fontSize: 18,
-    textAlign: "center"
+    textAlign: "center",
   },
 });

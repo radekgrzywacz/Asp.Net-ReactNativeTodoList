@@ -8,7 +8,7 @@ const Home = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(Platform.OS === "ios" ? "http://localhost:5000/api/users/1" : "http://10.0.2.2:5000/api/users/1")
+      .get(Platform.OS === "ios" ? "http://localhost:5000/api/users/3" : "http://10.0.2.2:5000/api/users/1")
       .then((response) => {
         if (response.data) {
           setUser(response.data);
