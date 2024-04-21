@@ -1,14 +1,28 @@
-import { ActivityIndicator, View, Text, StyleSheet, Platform } from "react-native";
+import {
+  ActivityIndicator,
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 const Home = () => {
+  const { authState } = useAuth();
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const userName = authState?.authenticated ? authState.userName : null;
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get(Platform.OS === "ios" ? "http://localhost:5000/api/users/3" : "http://10.0.2.2:5000/api/users/1")
+      .get(
+        Platform.OS === "ios"
+          ? `http://localhost:5000/api/users/${userName}`
+          : `http://10.0.2.2:5000/api/users/${userName}`
+      )
       .then((response) => {
         if (response.data) {
           setUser(response.data);
@@ -20,7 +34,7 @@ const Home = () => {
       .catch((error) => {
         console.log(error);
       });
-      setLoading(false);
+    setLoading(false);
   }, []);
 
   if (loading) {
@@ -34,7 +48,9 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hi {user.userName !== null ? user.userName : 'there'}!</Text>
+      <Text style={styles.text}>
+        Hi {userName !== null ? userName : "there"}!
+      </Text>
     </View>
   );
 };

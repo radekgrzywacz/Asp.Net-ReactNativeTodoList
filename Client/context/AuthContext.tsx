@@ -4,7 +4,7 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 interface AuthProps {
-  authState?: { token: string | null; authenticated: boolean | null };
+  authState?: { userName: string; token: string | null; authenticated: boolean | null };
   onRegister?: (
     email: string,
     password: string,
@@ -15,7 +15,8 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = "todo_jwt";
-export const API_URL = Platform.OS === 'ios' ? "http://192.168.68.110:5000/api/account" : "http://10.0.2.2:5000/api/account";
+const USER_NAME = "todo_username";
+export const API_URL = Platform.OS === 'ios' ? "http://localhost:5000/api/account" : "http://10.0.2.2:5000/api/account";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -25,9 +26,11 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [authState, setAuthState] = useState<{
+    userName: string | null;
     token: string | null;
     authenticated: boolean | null;
   }>({
+    userName: null,
     token: null,
     authenticated: null,
   });
@@ -35,12 +38,14 @@ export const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     const loadToken = async () => {
       const token = await SecureStore.getItemAsync(TOKEN_KEY);
+      const userName = await SecureStore.getItemAsync(USER_NAME);
       console.log("stored: ", token);
 
       if (token) {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
         setAuthState({
+          userName: userName,
           token: token,
           authenticated: true,
         });
@@ -72,6 +77,7 @@ export const AuthProvider = ({ children }: any) => {
 
       console.log("RESULT: ", result);
       setAuthState({
+        userName: result.data.userName,
         token: result.data.token,
         authenticated: true,
       });
@@ -80,6 +86,8 @@ export const AuthProvider = ({ children }: any) => {
         "Authorization"
       ] = `Bearer ${result.data.token}`;
 
+      console.log(result.data);
+      await SecureStore.setItemAsync(USER_NAME, result.data.userName);
       await SecureStore.setItemAsync(TOKEN_KEY, result.data.token);
 
       setIsLoading(false);
@@ -97,6 +105,7 @@ export const AuthProvider = ({ children }: any) => {
     axios.defaults.headers.common["Authorization"] = "";
 
     setAuthState({
+      userName: null,
       token: null,
       authenticated: false,
     });

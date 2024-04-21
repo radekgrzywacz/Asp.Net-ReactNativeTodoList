@@ -4,6 +4,6 @@ namespace API.Entities;
 
 public class AppUser : IdentityUser<int>
 {
-    public List<string> Todos { get; set; }
     public ICollection<AppUserRole> UserRoles { get; set; }
+    public List<Todo> Todos { get; set; } 
 }
