@@ -1,24 +1,15 @@
-import React from "react";
-import { View, Modal, TouchableOpacity, Text } from "react-native";
-import DatePicker from "react-native-modern-datepicker";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+  TextInput,
+} from "react-native";
+import React, { useState } from "react";
+import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 
-interface ModalCalendarProps {
-  visible: boolean;
-  onClose: () => void;
-  onSubmit: () => void;
-  startDate: string; // Assuming startDate is a string in the format "YYYY/MM/DD"
-  selectedDate: string;
-  onDateChange: (date: string) => void;
-}
-
-const ModalCalendar: React.FC<ModalCalendarProps> = ({
-  visible,
-  onClose,
-  onSubmit,
-  startDate,
-  selectedDate,
-  onDateChange,
-}) => {
+const ModalCalendar = ({ visible, onClose, onSubmit, startDate, selectedDate, onDateChange }) => {
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View style={styles.centeredView}>

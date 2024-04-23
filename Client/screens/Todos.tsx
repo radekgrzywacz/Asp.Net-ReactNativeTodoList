@@ -16,6 +16,7 @@ import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import axios from "axios";
 import { Todo } from "../models/todo";
 import ModalCalendar from "../components/ModalCalendar";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 const Todos = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +66,7 @@ const Todos = () => {
     <View style={styles.container}>
       <View style={styles.addTodoBox}>
         <TextInput
-          style={{ flex: 1 }}
+          style={{ flex: 1, fontFamily: "regular", fontSize: 17}}
           autoCapitalize="none"
           autoComplete="off"
           autoCorrect={false}
@@ -74,12 +75,43 @@ const Todos = () => {
           onChangeText={(text: string) => setTodo(text)}
         />
         <TouchableOpacity
-          style={{ alignSelf: "flex-end" }}
+          style={{ alignSelf: "flex-end", marginBottom: 2 }}
           onPress={() => setModalVisible(true)}
         >
-          <Ionicons name="add-circle" size={20} color={"#616161"} />
+          <Ionicons name="add-circle" size={25} color={"#616161"} />
         </TouchableOpacity>
       </View>
+      <Text
+        style={{
+          alignSelf: "baseline",
+          marginLeft: 23,
+          fontFamily: "extrabold",
+          fontSize: 18,
+          color: "#627254"
+        }}
+      >
+        To do:
+      </Text>
+      <FlatList
+        style={{ width: "90%" }}
+        data={todos}
+        renderItem={({ item }: { item: Todo }) => {
+          return (
+            <View style={styles.todoContainer}>
+              <Text style={styles.dueDate}>{item.dueDate}</Text>
+              <BouncyCheckbox
+                size={20}
+                fillColor="#76885B"
+                text={item.title}
+                bounceEffectIn={0.3}
+                iconStyle={{ borderWidth: 2, borderColor: "#76885B" }}
+                textStyle={{ fontFamily: "regular" }}
+                style={{ flex: 2 }}
+              />
+            </View>
+          );
+        }}
+      />
       <ModalCalendar
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -87,17 +119,6 @@ const Todos = () => {
         startDate={startDate}
         selectedDate={selectedDate}
         onDateChange={(date) => setSelectedDate(date)}
-      />
-      <FlatList
-        style={{ width: "90%" }}
-        data={todos}
-        renderItem={({ item }: { item: Todo }) => {
-          return (
-            <View style={styles.todoContainer}>
-              <Text>{item.title}</Text>
-            </View>
-          );
-        }}
       />
     </View>
   );
@@ -117,46 +138,31 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   addTodoBox: {
+    marginTop: 10,
     borderWidth: 2,
     padding: 7,
     borderRadius: 16,
-    width: "85%",
+    borderColor: "#627254",
+    width: "90%",
+    height: "7%",
     backgroundColor: "#DDDDDD",
     flexDirection: "row",
     marginBottom: 7,
   },
-  scrollContainer: {
-    padding: 5,
-    backgroundColor: "#EEEEEE",
-    width: "90%",
-    flexDirection: "row",
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "#EEEEEE",
-    borderRadius: 20,
-    width: "90%",
-    padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
   todoContainer: {
     borderWidth: 2,
     borderRadius: 16,
+    borderColor: "#627254",
     padding: 16,
     marginBottom: 10,
+    backgroundColor: "#DDDDDD",
+    paddingTop: 7,
+  },
+  dueDate: {
+    fontFamily: "semibold",
+    fontSize: 15,
+    color: "grey",
+    marginBottom: 5,
+    marginLeft: 2,
   },
 });
