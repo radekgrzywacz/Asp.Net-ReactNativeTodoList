@@ -1,43 +1,28 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  StyleSheet,
-  TextInput,
-} from "react-native";
-import React, { useState } from "react";
-import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
+import React from "react";
+import { View, Modal, TouchableOpacity, Text } from "react-native";
+import DatePicker from "react-native-modern-datepicker";
 
-const ModalCalendar = ({open, onCloseModal}) => {
-  const today = new Date();
-  const startDate = getFormatedDate(
-    today.setDate(today.getDate() + 1),
-    "YYYY/MM/DD"
-  );
-  const [todo, setTodo] = useState("");
-  const [selectedDate, setSelectedDate] = useState("2024/04/21");
+interface ModalCalendarProps {
+  visible: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
+  startDate: string; // Assuming startDate is a string in the format "YYYY/MM/DD"
+  selectedDate: string;
+  onDateChange: (date: string) => void;
+}
 
-  const handleCloseModal = () => {
-    onCloseModal();
-  };
-
-  
+const ModalCalendar: React.FC<ModalCalendarProps> = ({
+  visible,
+  onClose,
+  onSubmit,
+  startDate,
+  selectedDate,
+  onDateChange,
+}) => {
   return (
-    <Modal animationType="slide" transparent={true} visible={open}>
+    <Modal animationType="slide" transparent={true} visible={visible}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <View style={styles.addTodoBox}>
-            <TextInput
-              style={{ flex: 1 }}
-              autoCapitalize="none"
-              autoComplete="off"
-              autoCorrect={false}
-              value={todo}
-              placeholder="Add Item"
-              onChangeText={(text: string) => setTodo(text)}
-            />
-          </View>
           <DatePicker
             options={{
               backgroundColor: "#EEEEEE",
@@ -46,18 +31,18 @@ const ModalCalendar = ({open, onCloseModal}) => {
             mode="calendar"
             minimumDate={startDate}
             selected={selectedDate}
-            onDateChange={(propDate) => setSelectedDate(propDate)}
+            onDateChange={onDateChange}
           />
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity
               style={{ flex: 1, alignSelf: "flex-start" }}
-              onPress={handleCloseModal}
+              onPress={onClose}
             >
               <Text>Close</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{ alignSelf: "flex-end" }}
-              onPress={() => console.log("submited", selectedDate)}
+              onPress={onSubmit}
             >
               <Text>Submit</Text>
             </TouchableOpacity>
@@ -68,18 +53,7 @@ const ModalCalendar = ({open, onCloseModal}) => {
   );
 };
 
-export default ModalCalendar;
-
-const styles = StyleSheet.create({
-  addTodoBox: {
-    borderWidth: 2,
-    padding: 7,
-    borderRadius: 16,
-    width: "85%",
-    backgroundColor: "#DDDDDD",
-    flexDirection: "row",
-    marginBottom: 7,
-  },
+const styles = {
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -102,4 +76,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-});
+};
+
+export default ModalCalendar;

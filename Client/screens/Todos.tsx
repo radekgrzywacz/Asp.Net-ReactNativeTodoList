@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import axios from "axios";
 import { Todo } from "../models/todo";
+import ModalCalendar from "../components/ModalCalendar";
 
 const Todos = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ const Todos = () => {
     "YYYY/MM/DD"
   );
   const [todo, setTodo] = useState("");
-  const [open, setOpen] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(startDate);
 
   useEffect(() => {
@@ -45,7 +46,8 @@ const Todos = () => {
       })
       .catch((error) => {
         console.log(error);
-      }).finally(() => {
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   }, []);
@@ -73,54 +75,21 @@ const Todos = () => {
         />
         <TouchableOpacity
           style={{ alignSelf: "flex-end" }}
-          onPress={() => setOpen(true)}
+          onPress={() => setModalVisible(true)}
         >
           <Ionicons name="add-circle" size={20} color={"#616161"} />
         </TouchableOpacity>
       </View>
-      <Modal animationType="slide" transparent={true} visible={open}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.addTodoBox}>
-              <TextInput
-                style={{ flex: 1 }}
-                autoCapitalize="none"
-                autoComplete="off"
-                autoCorrect={false}
-                value={todo}
-                placeholder="Add Item"
-                onChangeText={(text: string) => setTodo(text)}
-              />
-            </View>
-            <DatePicker
-              options={{
-                backgroundColor: "#EEEEEE",
-                mainColor: "#627254",
-              }}
-              mode="calendar"
-              minimumDate={startDate}
-              selected={selectedDate}
-              onDateChange={(propDate) => setSelectedDate(propDate)}
-            />
-            <View style={{ flexDirection: "row" }}>
-              <TouchableOpacity
-                style={{ flex: 1, alignSelf: "flex-start" }}
-                onPress={() => setOpen(false)}
-              >
-                <Text>Close</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{ alignSelf: "flex-end" }}
-                onPress={() => console.log("submited", selectedDate)}
-              >
-                <Text>Submit</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ModalCalendar
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={() => console.log("submitted")}
+        startDate={startDate}
+        selectedDate={selectedDate}
+        onDateChange={(date) => setSelectedDate(date)}
+      />
       <FlatList
-        style={{width: "90%"}}
+        style={{ width: "90%" }}
         data={todos}
         renderItem={({ item }: { item: Todo }) => {
           return (
@@ -188,6 +157,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 16,
     padding: 16,
-    marginBottom: 10
+    marginBottom: 10,
   },
 });
