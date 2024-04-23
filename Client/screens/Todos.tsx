@@ -6,12 +6,19 @@ import {
   TextInput,
   TouchableOpacity,
   Modal,
+  Platform,
+  ActivityIndicator,
+  FlatList,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
+import axios from "axios";
+import { Todo } from "../models/todo";
 
 const Todos = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const today = new Date();
   const startDate = getFormatedDate(
     today.setDate(today.getDate() + 1),
@@ -19,7 +26,38 @@ const Todos = () => {
   );
   const [todo, setTodo] = useState("");
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("2024/04/21");
+  const [selectedDate, setSelectedDate] = useState(startDate);
+
+  useEffect(() => {
+    setIsLoading(true);
+    axios
+      .get(
+        Platform.OS === "ios"
+          ? `http://localhost:5000/api/users/11/todos`
+          : `http://10.0.2.2:5000/api/users/11/todos`
+      )
+      .then((response) => {
+        if (response.data) {
+          setTodos(response.data);
+        } else {
+          console.log("Couldn't find any todos");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      }).finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container]}>
+        <ActivityIndicator size="large" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -81,8 +119,17 @@ const Todos = () => {
           </View>
         </View>
       </Modal>
-
-      <ScrollView style={styles.scrollContainer}></ScrollView>
+      <FlatList
+        style={{width: "90%"}}
+        data={todos}
+        renderItem={({ item }: { item: Todo }) => {
+          return (
+            <View style={styles.todoContainer}>
+              <Text>{item.title}</Text>
+            </View>
+          );
+        }}
+      />
     </View>
   );
 };
@@ -136,5 +183,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  todoContainer: {
+    borderWidth: 2,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 10
   },
 });
