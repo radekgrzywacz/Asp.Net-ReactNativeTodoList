@@ -1,16 +1,16 @@
 import { Button, View } from "react-native";
 import Home from "../screens/Home";
-import Calendar from "../screens/Calendar";
+import CalendarScreen from "../screens/CalendarScreen";
 import Todos from "../screens/Todos";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../context/AuthContext";
+import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
 export const Tab = createBottomTabNavigator();
 
-
 const AppNavigator = () => {
-    const {onLogout} = useAuth();
+  const { onLogout } = useAuth();
 
   return (
     <Tab.Navigator
@@ -27,7 +27,13 @@ const AppNavigator = () => {
         tabBarBackground: () => (
           <View style={{ backgroundColor: "#EEEEEE", flex: 1 }} />
         ),
-        headerRight: () => <Button onPress={onLogout} title="Sign out" />
+        headerRight: () => (
+          <GestureHandlerRootView>
+            <TouchableOpacity style={{marginRight: 15}} onPress={() => console.log("logout")}>
+              <Ionicons name="settings-outline" size={25} color={"white"} />
+            </TouchableOpacity>
+          </GestureHandlerRootView>
+        ),
       }}
     >
       <>
@@ -38,7 +44,8 @@ const AppNavigator = () => {
             tabBarIcon: ({ color }) => (
               <Ionicons name="list-outline" size={20} color={color} />
             ),
-          }} />
+          }}
+        />
         <Tab.Screen
           name="Home"
           component={Home}
@@ -46,15 +53,17 @@ const AppNavigator = () => {
             tabBarIcon: ({ color }) => (
               <Ionicons name="home" size={20} color={color} />
             ),
-          }} />
+          }}
+        />
         <Tab.Screen
           name="Calendar"
-          component={Calendar}
+          component={CalendarScreen}
           options={{
             tabBarIcon: ({ color }) => (
               <Ionicons name="calendar-outline" size={20} color={color} />
             ),
-          }} />
+          }}
+        />
       </>
     </Tab.Navigator>
   );

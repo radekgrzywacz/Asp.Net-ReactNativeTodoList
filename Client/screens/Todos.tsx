@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   FlatList,
+  SectionList,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState } from "react";
@@ -53,6 +54,20 @@ const Todos = () => {
       });
   }, []);
 
+  const todosUncompleted = todos.filter((todo) => todo.isDone === 0);
+  const todosCompleted = todos.filter((todo) => todo.isDone === 1);
+
+  const DATA = [
+    {
+      title: "To do:",
+      data: todosUncompleted,
+    },
+    {
+      title: "Completed",
+      data: todosCompleted,
+    },
+  ];
+
   if (isLoading) {
     return (
       <View style={[styles.container]}>
@@ -66,7 +81,7 @@ const Todos = () => {
     <View style={styles.container}>
       <View style={styles.addTodoBox}>
         <TextInput
-          style={{ flex: 1, fontFamily: "regular", fontSize: 17}}
+          style={{ flex: 1, fontFamily: "regular", fontSize: 17 }}
           autoCapitalize="none"
           autoComplete="off"
           autoCorrect={false}
@@ -81,20 +96,22 @@ const Todos = () => {
           <Ionicons name="add-circle" size={25} color={"#616161"} />
         </TouchableOpacity>
       </View>
-      <Text
-        style={{
-          alignSelf: "baseline",
-          marginLeft: 23,
-          fontFamily: "extrabold",
-          fontSize: 18,
-          color: "#627254"
-        }}
-      >
-        To do:
-      </Text>
-      <FlatList
+      <SectionList
         style={{ width: "90%" }}
-        data={todos}
+        sections={DATA}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text
+            style={{
+              alignSelf: "baseline",
+              marginLeft: 23,
+              fontFamily: "extrabold",
+              fontSize: 18,
+              color: "#627254",
+            }}
+          >
+            {title}
+          </Text>
+        )}
         renderItem={({ item }: { item: Todo }) => {
           return (
             <View style={styles.todoContainer}>
@@ -107,11 +124,13 @@ const Todos = () => {
                 iconStyle={{ borderWidth: 2, borderColor: "#76885B" }}
                 textStyle={{ fontFamily: "regular" }}
                 style={{ flex: 2 }}
+                isChecked={item.isDone === 0 ? false : true}
               />
             </View>
           );
         }}
       />
+
       <ModalCalendar
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
