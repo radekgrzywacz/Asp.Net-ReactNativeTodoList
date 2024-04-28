@@ -10,7 +10,7 @@ public class Todo
     public string Title { get; set; }
     [Required(ErrorMessage = "Due date is required")]
     public DateOnly DueDate { get; set; }
-    public string? Description { get; set; }
+    public string Description { get; set; }
     public AppUser AppUser { get; set; }
     public string AppUserId { get; set; }
     public int IsDone { get; set; }

@@ -29,6 +29,8 @@ public static class ServiceExtensions
         {
             
         });
+
+        services.AddAutoMapper(typeof(Program));
         
         services.AddSingleton<ILoggerManager, LoggerManager>();
 

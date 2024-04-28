@@ -17,7 +17,6 @@ public class DataContext : IdentityDbContext<AppUser>
         base.OnModelCreating(modelBuilder);
     }
     
-    public DbSet<AppUser> Users { get; set; }
     public DbSet<Todo> Todos { get; set; }
     
 }
