@@ -1,6 +1,6 @@
 namespace API.Interfaces;
 
-public interface ITodoRepository
+public interface IAppUserService
 {
     
 }

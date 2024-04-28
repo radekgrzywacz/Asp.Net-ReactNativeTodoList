@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities;
 
-public class AppUser : IdentityUser<int>
+public class AppUser : IdentityUser
 {
-    public ICollection<AppUserRole> UserRoles { get; set; }
-    public List<Todo> Todos { get; set; } 
+    public List<Todo> Todos { get; set; }
 }
