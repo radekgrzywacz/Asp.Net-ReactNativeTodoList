@@ -24,11 +24,6 @@ public static class ServiceExtensions
                     .AllowAnyHeader();
             });
         });
-        
-        services.Configure<IISOptions>(options =>
-        {
-            
-        });
 
         services.AddAutoMapper(typeof(Program));
         

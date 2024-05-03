@@ -1,11 +1,6 @@
-using API.Data;
 using API.ExceptionsHandling;
 using API.Extensions;
-using API.Interfaces;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
 using NLog;
-using NLog.Fluent;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -4,12 +4,14 @@ using System.Security.Cryptography;
 using System.Text;
 using API.DTOs;
 using API.Entities;
+using API.Entities.ConfigurationModels;
 using API.ExceptionsHandling.Exceptions;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
@@ -19,31 +21,34 @@ public class AuthenticationService : IAuthenticationService
     private readonly ILoggerManager _logger;
     private readonly IMapper _mapper;
     private readonly UserManager<AppUser> _userManager;
-    private readonly IConfiguration _config;
+    private readonly IOptions<JwtConfiguration> _config;
+    private readonly JwtConfiguration _jwtConfiguration;
 
     private AppUser _user;
 
-    public AuthenticationService(ILoggerManager logger, IMapper mapper, UserManager<AppUser> userManager, IConfiguration config )
+    public AuthenticationService(ILoggerManager logger, IMapper mapper, UserManager<AppUser> userManager,
+        IOptions<JwtConfiguration> config)
     {
         _logger = logger;
         _mapper = mapper;
         _userManager = userManager;
         _config = config;
+        _jwtConfiguration = _config.Value;
     }
-    
+
     public async Task<IdentityResult> RegisterUser(AppUserForRegistrationDto userForRegistration)
     {
         var user = _mapper.Map<AppUser>(userForRegistration);
 
         var result = await _userManager.CreateAsync(user, userForRegistration.Password);
-        
+
         return result;
     }
 
     public async Task<bool> ValidateUser(AppUserForAuthenticationDto userForAuth)
     {
         _user = await _userManager.FindByNameAsync(userForAuth.UserName);
-        
+
         var result = (_user != null && await _userManager.CheckPasswordAsync(_user, userForAuth.Password));
         if (!result)
         {
@@ -62,8 +67,8 @@ public class AuthenticationService : IAuthenticationService
         var refreshToken = GenerateRefreshToken();
 
         _user.RefreshToken = refreshToken;
-        
-        if(populateExp) _user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+
+        if (populateExp) _user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
 
         await _userManager.UpdateAsync(_user);
 
@@ -89,7 +94,7 @@ public class AuthenticationService : IAuthenticationService
 
     private SigningCredentials GetSigningCredentials()
     {
-        var key = Encoding.UTF8.GetBytes(_config.GetSection("JwtSettings")["TokenKey"]);
+        var key = Encoding.UTF8.GetBytes(_jwtConfiguration.TokenKey);
         var secret = new SymmetricSecurityKey(key);
 
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
@@ -107,12 +112,10 @@ public class AuthenticationService : IAuthenticationService
 
     private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
-        var jwtSettings = _config.GetSection("JwtSettings");
-
         var tokenOptions = new JwtSecurityToken
         (
             claims: claims,
-            expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expires"])),
+            expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtConfiguration.Expires)),
             signingCredentials: signingCredentials
         );
 
@@ -131,14 +134,12 @@ public class AuthenticationService : IAuthenticationService
 
     private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
-        var jwtSettings = _config.GetSection("JwtSettings");
-
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false,
             ValidateIssuer = false,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["TokenKey"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.TokenKey)),
             ValidateLifetime = true
         };
 
@@ -155,8 +156,4 @@ public class AuthenticationService : IAuthenticationService
 
         return principal;
     }
-
-
-
-
 }
