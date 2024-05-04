@@ -12,8 +12,8 @@ import { useAuth } from "../context/AuthContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const LoginScreen = ({ navigation }) => {
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("radox");
+  const [password, setPassword] = useState("Pa$$w0rd");
   const { onLogin } = useAuth();
 
   const login = async () => {

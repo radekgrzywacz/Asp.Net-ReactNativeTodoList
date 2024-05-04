@@ -1,10 +1,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Platform } from "react-native";
 import axios from "axios";
+import "core-js/stable/atob";
+import { jwtDecode } from "jwt-decode";
 import * as SecureStore from "expo-secure-store";
 
 interface AuthProps {
-  authState?: { userName: string; token: string | null; authenticated: boolean | null };
+  authState?: {
+    userName: string;
+    token: string | null;
+    authenticated: boolean | null;
+  };
   onRegister?: (
     email: string,
     password: string,
@@ -14,9 +20,16 @@ interface AuthProps {
   onLogout?: () => Promise<any>;
 }
 
+interface DecodedToken {
+  [key: string]: string; // or whatever types your token properties have
+}
+
 const TOKEN_KEY = "todo_jwt";
 const USER_NAME = "todo_username";
-export const API_URL = Platform.OS === 'ios' ? "http://localhost:5000/api/account" : "http://10.0.2.2:5000/api/account";
+export const API_URL =
+  Platform.OS === "ios"
+    ? "http://localhost:5000/api/authentication"
+    : "http://10.0.2.2:5000/api/authentication";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -37,18 +50,28 @@ export const AuthProvider = ({ children }: any) => {
 
   useEffect(() => {
     const loadToken = async () => {
-      const token = await SecureStore.getItemAsync(TOKEN_KEY);
-      const userName = await SecureStore.getItemAsync(USER_NAME);
-      console.log("stored: ", token);
+      try {
+        console.log("IN EFFECT");
+        const token = await SecureStore.getItemAsync(TOKEN_KEY);
+        console.log("stored: ", token);
 
-      if (token) {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        if (token) {
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-        setAuthState({
-          userName: userName,
-          token: token,
-          authenticated: true,
-        });
+          const decodedToken: DecodedToken = jwtDecode(token);
+
+          const name =
+            decodedToken[
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+            ];
+          setAuthState({
+            userName: name,
+            token: token,
+            authenticated: true,
+          });
+        }
+      } catch (error) {
+        console.error("Token loading error:", error);
       }
     };
     loadToken();
@@ -60,7 +83,7 @@ export const AuthProvider = ({ children }: any) => {
     password: string
   ) => {
     try {
-      return await axios.post(`${API_URL}/register`, {
+      return await axios.post(`${API_URL}`, {
         username,
         email,
         password,
@@ -73,22 +96,31 @@ export const AuthProvider = ({ children }: any) => {
   const login = async (userName: string, password: string) => {
     try {
       setIsLoading(true);
-      const result = await axios.post(`${API_URL}/login`, { userName, password });
-
-      console.log("RESULT: ", result);
+      const result = await axios.post(`${API_URL}/login`, {
+        userName,
+        password,
+      });
+      console.log("TOKEN: ", result.data.accessToken);
+      const token = result.data.accessToken;
+      console.log("TOKEN  2:  ", token);
+      const decodedToken: DecodedToken = jwtDecode(token);
+      console.log("After decoding");
+      const name =
+        decodedToken[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+        ];
+      console.log("after parsing");
       setAuthState({
-        userName: result.data.userName,
-        token: result.data.token,
+        token: result.data.accessToken,
+        userName: name,
         authenticated: true,
       });
 
       axios.defaults.headers.common[
         "Authorization"
-      ] = `Bearer ${result.data.token}`;
+      ] = `Bearer ${result.data.accessToken}`;
 
-      console.log(result.data);
-      await SecureStore.setItemAsync(USER_NAME, result.data.userName);
-      await SecureStore.setItemAsync(TOKEN_KEY, result.data.token);
+      await SecureStore.setItemAsync(TOKEN_KEY, result.data.accessToken);
 
       setIsLoading(false);
 
