@@ -2,25 +2,24 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TextInput,
   TouchableOpacity,
-  Modal,
   Platform,
   ActivityIndicator,
-  FlatList,
   SectionList,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState } from "react";
-import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
+import { getFormatedDate } from "react-native-modern-datepicker";
 import axios from "axios";
 import { Todo } from "../models/todo";
 import ModalCalendar from "../components/ModalCalendar";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { useAuth } from "../context/AuthContext";
 
 const Todos = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { authState } = useAuth();
+  const [isLoading, setLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
   const today = new Date();
   const startDate = getFormatedDate(
@@ -31,27 +30,29 @@ const Todos = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(startDate);
 
+
   useEffect(() => {
-    setIsLoading(true);
-    axios
-      .get(
-        Platform.OS === "ios"
-          ? `http://localhost:5000/api/users/11/todos`
-          : `http://10.0.2.2:5000/api/users/11/todos`
-      )
-      .then((response) => {
-        if (response.data) {
-          setTodos(response.data);
-        } else {
-          console.log("Couldn't find any todos");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    if (authState?.id !== undefined) {
+      setLoading(true);
+      axios
+        .get(
+          Platform.OS === "ios"
+            ? `http://localhost:5000/api/users/${authState.id}/todos`
+            : `http://10.0.2.2:5000/api/users/${authState.id}/todos`
+        )
+        .then((response) => {
+          if (response.data) {
+            setTodos(response.data);
+          } else {
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   }, []);
 
   const todosUncompleted = todos.filter((todo) => todo.isDone === 0);
@@ -96,40 +97,57 @@ const Todos = () => {
           <Ionicons name="add-circle" size={25} color={"#616161"} />
         </TouchableOpacity>
       </View>
-      <SectionList
-        style={{ width: "90%" }}
-        sections={DATA}
-        renderSectionHeader={({ section: { title } }) => (
+      {todos.length > 0 ? (
+        <SectionList
+          style={{ width: "90%", position: "absolute", top: 75 }}
+          sections={DATA}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text
+              style={{
+                alignSelf: "baseline",
+                marginLeft: 23,
+                fontFamily: "extrabold",
+                fontSize: 18,
+                color: "#627254",
+              }}
+            >
+              {title}
+            </Text>
+          )}
+          renderItem={({ item }: { item: Todo }) => {
+            return (
+              <View style={styles.todoContainer}>
+                <Text style={styles.dueDate}>{item.dueDate}</Text>
+                <BouncyCheckbox
+                  size={20}
+                  fillColor="#76885B"
+                  text={item.title}
+                  bounceEffectIn={0.3}
+                  iconStyle={{ borderWidth: 2, borderColor: "#76885B" }}
+                  textStyle={{ fontFamily: "regular" }}
+                  style={{ flex: 2 }}
+                  isChecked={item.isDone === 0 ? false : true}
+                />
+              </View>
+            );
+          }}
+        />
+      ) : (
+        <View style={{ alignItems: "center" }}>
           <Text
             style={{
-              alignSelf: "baseline",
+              alignSelf: "center",
               marginLeft: 23,
               fontFamily: "extrabold",
               fontSize: 18,
               color: "#627254",
+              textAlign: "center",
             }}
           >
-            {title}
+            Your todo list is completly empty! Add some todos!
           </Text>
-        )}
-        renderItem={({ item }: { item: Todo }) => {
-          return (
-            <View style={styles.todoContainer}>
-              <Text style={styles.dueDate}>{item.dueDate}</Text>
-              <BouncyCheckbox
-                size={20}
-                fillColor="#76885B"
-                text={item.title}
-                bounceEffectIn={0.3}
-                iconStyle={{ borderWidth: 2, borderColor: "#76885B" }}
-                textStyle={{ fontFamily: "regular" }}
-                style={{ flex: 2 }}
-                isChecked={item.isDone === 0 ? false : true}
-              />
-            </View>
-          );
-        }}
-      />
+        </View>
+      )}
 
       <ModalCalendar
         visible={modalVisible}
@@ -167,6 +185,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDDDDD",
     flexDirection: "row",
     marginBottom: 7,
+    position: "absolute",
+    top: 5,
   },
   todoContainer: {
     borderWidth: 2,

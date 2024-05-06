@@ -1,5 +1,6 @@
 using API.Entities;
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
@@ -11,4 +12,8 @@ public class AppUserRepository : RepositoryBase<AppUser> , IAppUserRepository
     {
         _context = context;
     }
+
+    public async Task<AppUser> GetAppUser(string appUserId, bool trackChanges) =>
+        await FindByCondition(u => u.Id.Equals(appUserId), trackChanges).SingleOrDefaultAsync();
+
 }

@@ -8,9 +8,7 @@ using API.Entities.ConfigurationModels;
 using API.ExceptionsHandling.Exceptions;
 using API.Interfaces;
 using AutoMapper;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -104,7 +102,7 @@ public class AuthenticationService : IAuthenticationService
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, _user.UserName)
+            new Claim(ClaimTypes.NameIdentifier, _user.Id)
         };
 
         return claims;

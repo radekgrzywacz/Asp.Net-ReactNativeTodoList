@@ -15,6 +15,8 @@ public class DataContext : IdentityDbContext<AppUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfiguration(new TodosConfiguration());
     }
     
     public DbSet<Todo> Todos { get; set; }

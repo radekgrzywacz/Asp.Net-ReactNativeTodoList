@@ -1,24 +1,26 @@
+using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-[Route("api/todos")]
+[Route("api/users/{userId}/todos")]
 [ApiController]
 [Authorize]
 public class TodosController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Test2()
+    private readonly IServiceManager _service;
+
+    public TodosController(IServiceManager service)
     {
-        var response = "hello world";
-        return Ok(response);
+        _service = service;
     }
-    
-    [HttpGet("test")]
-    public IActionResult Test()
+
+    [HttpGet]
+    public async Task<IActionResult> GetTodosForUser(string userId)
     {
-        var response = new { Message = "Hello world" };
-        return Ok(response);
+        var todos = await _service.TodoService.GetTodos(userId, trackChanges: false);
+
+        return Ok(todos);
     }
 }

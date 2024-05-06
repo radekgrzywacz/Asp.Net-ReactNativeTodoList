@@ -44,5 +44,17 @@ public class AuthenticationController : ControllerBase
         return Ok(tokenDto);
     }
     
-    
+    [HttpGet]
+    public IActionResult Test2()
+    {
+        var response = "hello world";
+        return Ok(response);
+    }
+
+    [HttpGet("test")]
+    public IActionResult Test()
+    {
+        var response = new { Message = "Hello world" };
+        return Ok(response);
+    }
 }
