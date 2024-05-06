@@ -1,20 +1,20 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
-import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import axios from "axios";
 import "core-js/stable/atob";
 import { jwtDecode } from "jwt-decode";
+import * as SecureStore from "expo-secure-store";
 
 interface AuthProps {
   authState?: {
+    id: string | null;
     token: string | null;
     authenticated: boolean | null;
-    id: string | null;
   };
   onRegister?: (
     email: string,
-    userName: string,
-    password: string
+    password: string,
+    userName: string
   ) => Promise<any>;
   onLogin?: (username: string, password: string) => Promise<any>;
   onLogout?: () => Promise<any>;
@@ -36,15 +36,16 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: any) => {
+  const [id, setId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [authState, setAuthState] = useState<{
+    id: string | null;
     token: string | null;
     authenticated: boolean | null;
-    id: string | null;
   }>({
+    id: null,
     token: null,
     authenticated: null,
-    id: null,
   });
 
   useEffect(() => {
@@ -56,22 +57,25 @@ export const AuthProvider = ({ children }: any) => {
           axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
           const decodedToken: DecodedToken = jwtDecode(token);
-          const userId =
+
+          const id =
             decodedToken[
               "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
             ];
+          setId(id);
+
+          console.log("USer id: ", id);
 
           setAuthState({
+            id: id,
             token: token,
             authenticated: true,
-            id: userId,
           });
         }
-      } catch (e) {
-        console.error("Token loading error:", e);
+      } catch (error) {
+        console.error("Token loading error:", error);
       }
     };
-
     loadToken();
   }, []);
 
@@ -81,9 +85,13 @@ export const AuthProvider = ({ children }: any) => {
     password: string
   ) => {
     try {
-      return await axios.post(`${API_URL}`, { username, email, password });
-    } catch (e) {
-      return { error: true, msg: (e as any).response.data.msg };
+      return await axios.post(`${API_URL}`, {
+        username,
+        email,
+        password,
+      });
+    } catch (error) {
+      return { error: true, msg: (error as any).response.data.msg };
     }
   };
 
@@ -94,40 +102,42 @@ export const AuthProvider = ({ children }: any) => {
         userName,
         password,
       });
-
-      const decodedToken: DecodedToken = jwtDecode(result.data.accessToken);
-      const userId =
+      const token = result.data.accessToken;
+      const decodedToken: DecodedToken = jwtDecode(token);
+      const id =
         decodedToken[
-          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier	"
         ];
-
       setAuthState({
-        token: result.data.accessToken,
+        token: token,
+        id: id,
         authenticated: true,
-        id: userId,
       });
 
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${result.data.accessToken}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      await SecureStore.setItemAsync(TOKEN_KEY, result.data.accessToken);
+      await SecureStore.setItemAsync(TOKEN_KEY, token);
+      console.log("Token zapisany, ID: ", authState?.token);
+
       setIsLoading(false);
-    } catch (e) {
-      return { error: true, msg: (e as any).response.data.msg };
+      return result;
+    } catch (error) {
+      return { error: true, msg: (error as any).response.data.msg };
     }
   };
 
   const logout = async () => {
+    setIsLoading(true);
     await SecureStore.deleteItemAsync(TOKEN_KEY);
 
     axios.defaults.headers.common["Authorization"] = "";
 
     setAuthState({
+      id: null,
       token: null,
       authenticated: false,
-      id: null,
     });
+    setIsLoading(false);
   };
 
   const value = {

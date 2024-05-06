@@ -14,34 +14,29 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState("");
 
-  console.log(authState);
-
-  // useEffect(() => {
-  //   if (authState?.id !== undefined) {
-  //     console.log("W effect w home");
-  //     setLoading(true);
-  //     axios
-  //       .get(
-  //         Platform.OS === "ios"
-  //           ? `http://localhost:5000/api/users/${authState.id}`
-  //           : `http://10.0.2.2:5000/api/users/${authState.id}`
-  //       )
-  //       .then((response) => {
-  //         if (response.data) {
-  //           setUserName(response.data.userName);
-  //           console.log("User found: ", response.data);
-  //         } else {
-  //           console.log("No user found in response");
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       })
-  //       .finally(() => {
-  //         setLoading(false);
-  //       });
-  //   }
-  // }, [authState]);
+  useEffect(() => {
+    if (authState?.id !== undefined) {
+      setLoading(true);
+      axios
+        .get(
+          Platform.OS === "ios"
+            ? `http://localhost:5000/api/users/${authState.id}`
+            : `http://10.0.2.2:5000/api/users/${authState.id}`
+        )
+        .then((response) => {
+          if (response.data) {
+            setUserName(response.data.userName);
+          } else {
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, []);
 
   if (loading) {
     return (
