@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import {
   ActivityIndicator,
   View,
@@ -6,36 +8,40 @@ import {
   Platform,
 } from "react-native";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
+
 const Home = () => {
   const { authState } = useAuth();
-  const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
+  const [userName, setUserName] = useState("");
 
-  const userName = authState?.authenticated ? authState.userName : null;
+  console.log(authState);
 
-  useEffect(() => {
-    setLoading(true);
-    axios
-      .get(
-        Platform.OS === "ios"
-          ? `http://localhost:5000/api/users/${userName}`
-          : `http://10.0.2.2:5000/api/users/${userName}`
-      )
-      .then((response) => {
-        if (response.data) {
-          setUser(response.data);
-          //console.log(response.data)
-        } else {
-          console.log("No user found in response");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    setLoading(false);
-  }, []);
+  // useEffect(() => {
+  //   if (authState?.id !== undefined) {
+  //     console.log("W effect w home");
+  //     setLoading(true);
+  //     axios
+  //       .get(
+  //         Platform.OS === "ios"
+  //           ? `http://localhost:5000/api/users/${authState.id}`
+  //           : `http://10.0.2.2:5000/api/users/${authState.id}`
+  //       )
+  //       .then((response) => {
+  //         if (response.data) {
+  //           setUserName(response.data.userName);
+  //           console.log("User found: ", response.data);
+  //         } else {
+  //           console.log("No user found in response");
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       })
+  //       .finally(() => {
+  //         setLoading(false);
+  //       });
+  //   }
+  // }, [authState]);
 
   if (loading) {
     return (

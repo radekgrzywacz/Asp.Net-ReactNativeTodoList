@@ -3,10 +3,10 @@ import React, { useCallback, useContext } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import AuthNavigator from './AuthNavigator'
 import AppNavigator from './AppNavigator'
-import { AuthProvider, useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext'
 
 const AppNav = () => {
-  const {authState, onLogout} = useAuth();
+  const {authState} = useAuth();
   const { isLoading } = useAuth();
   if (isLoading) {
     return (
