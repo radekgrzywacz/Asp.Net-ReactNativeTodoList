@@ -14,7 +14,6 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState("");
 
-
   useEffect(() => {
     if (authState?.id !== undefined) {
       setLoading(true);
@@ -31,7 +30,7 @@ const Home = () => {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log("Error: ",error.response.status);
         })
         .finally(() => {
           setLoading(false);

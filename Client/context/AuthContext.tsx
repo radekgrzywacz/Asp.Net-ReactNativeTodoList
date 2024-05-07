@@ -8,6 +8,7 @@ import { jwtDecode } from "jwt-decode";
 interface AuthProps {
   authState?: {
     token: string | null;
+    refreshToken: string | null;
     authenticated: boolean | null;
     id: string | null;
   };
@@ -21,7 +22,7 @@ interface AuthProps {
 }
 
 interface DecodedToken {
-  [key: string]: string; // or whatever types your token properties have
+  [key: string]: string; 
 }
 
 const TOKEN_KEY = "todo_jwt";
@@ -39,10 +40,12 @@ export const AuthProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [authState, setAuthState] = useState<{
     token: string | null;
+    refreshToken: string | null;
     authenticated: boolean | null;
     id: string | null;
   }>({
     token: null,
+    refreshToken: null,
     authenticated: null,
     id: null,
   });
@@ -50,22 +53,27 @@ export const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     const loadToken = async () => {
       try {
-        const token = await SecureStore.getItemAsync(TOKEN_KEY);
+        const tokensJson = await SecureStore.getItemAsync(TOKEN_KEY);
+        if (tokensJson !== null) {
+          const tokens = JSON.parse(tokensJson);
+          console.log("TOKENY: ", tokens);
 
-        if (token) {
-          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          if (tokens.accessToken && tokens.refreshToken) {
+            axios.defaults.headers.common["Authorization"] = `Bearer ${tokens.accessToken}`;
 
-          const decodedToken: DecodedToken = jwtDecode(token);
-          const userId =
-            decodedToken[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-            ];
+            const decodedToken: DecodedToken = jwtDecode(tokens.accessToken);
+            const userId =
+              decodedToken[
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+              ];
 
-          setAuthState({
-            token: token,
-            authenticated: true,
-            id: userId,
-          });
+            setAuthState({
+              token: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              authenticated: true,
+              id: userId,
+            });
+          }
         }
       } catch (e) {
         console.error("Token loading error:", e);
@@ -103,6 +111,7 @@ export const AuthProvider = ({ children }: any) => {
 
       setAuthState({
         token: result.data.accessToken,
+        refreshToken: result.data.refreshToken,
         authenticated: true,
         id: userId,
       });
@@ -111,7 +120,7 @@ export const AuthProvider = ({ children }: any) => {
         "Authorization"
       ] = `Bearer ${result.data.accessToken}`;
 
-      await SecureStore.setItemAsync(TOKEN_KEY, result.data.accessToken);
+      await SecureStore.setItemAsync(TOKEN_KEY, JSON.stringify(result.data));
       setIsLoading(false);
     } catch (e) {
       return { error: true, msg: (e as any).response.data.msg };
@@ -125,6 +134,7 @@ export const AuthProvider = ({ children }: any) => {
 
     setAuthState({
       token: null,
+      refreshToken: null,
       authenticated: false,
       id: null,
     });

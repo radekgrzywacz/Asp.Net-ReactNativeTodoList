@@ -43,6 +43,14 @@ public class AuthenticationController : ControllerBase
         
         return Ok(tokenDto);
     }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] TokenDto tokenDto)
+    {
+        var tokenToReturnDto = await _service.AuthenticationService.RefreshToken(tokenDto);
+
+        return Ok(tokenToReturnDto);
+    }
     
     [HttpGet]
     public IActionResult Test2()

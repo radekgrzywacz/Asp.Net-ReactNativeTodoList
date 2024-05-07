@@ -70,9 +70,9 @@ public class AuthenticationService : IAuthenticationService
 
         await _userManager.UpdateAsync(_user);
 
-        var accesToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        var accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
-        return new TokenDto(accesToken, refreshToken);
+        return new TokenDto(accessToken, refreshToken);
     }
 
     public async Task<TokenDto> RefreshToken(TokenDto tokenDto)
