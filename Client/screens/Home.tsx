@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, API_URL } from "../context/AuthContext";
 import {
   ActivityIndicator,
   View,
@@ -22,8 +22,8 @@ const Home = () => {
       api
         .get(
           Platform.OS === "ios"
-            ? `http://localhost:5000/api/users/${authState.id}`
-            : `http://10.0.2.2:5000/api/users/${authState.id}`
+            ? `${API_URL}/users/${authState.id}`
+            : `${API_URL}/users/${authState.id}`
         )
         .then((response) => {
           if (response.data) {

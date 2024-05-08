@@ -53,6 +53,24 @@ public class TodosConfiguration : IEntityTypeConfiguration<Todo>
                 Description = "Perform thorough testing of the application functionality.",
                 AppUserId = "608c3c92-e757-48d9-9a5e-1446a283e194",
                 IsDone = 1
+            },
+            new Todo
+            {
+                Id = 6,
+                Title = "Visit grandma",
+                DueDate = new DateOnly(2024, 05, 1),
+                Description = "Visit grandma.",
+                AppUserId = "608c3c92-e757-48d9-9a5e-1446a283e194",
+                IsDone = 0
+            },
+            new Todo
+            {
+                Id = 7,
+                Title = "Complete app",
+                DueDate = new DateOnly(2024, 05, 3),
+                Description = "Complete this app.",
+                AppUserId = "608c3c92-e757-48d9-9a5e-1446a283e194",
+                IsDone = 1
             }
         );
     }

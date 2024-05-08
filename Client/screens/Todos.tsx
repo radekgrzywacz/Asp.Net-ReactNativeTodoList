@@ -15,7 +15,7 @@ import axios from "axios";
 import { Todo } from "../models/todo";
 import ModalCalendar from "../components/ModalCalendar";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, API_URL } from "../context/AuthContext";
 import useAxios from "../utils/useAxios";
 
 const Todos = () => {
@@ -33,15 +33,14 @@ const Todos = () => {
 
   let api = useAxios();
 
-
   useEffect(() => {
     if (authState?.id !== undefined) {
       setLoading(true);
-      api
+      axios
         .get(
           Platform.OS === "ios"
-            ? `http://localhost:5000/api/users/${authState.id}/todos`
-            : `http://10.0.2.2:5000/api/users/${authState.id}/todos`
+            ? `${API_URL}/users/${authState.id}/todos`
+            : `${API_URL}/users/${authState.id}/todos`
         )
         .then((response) => {
           if (response.data) {
@@ -58,8 +57,13 @@ const Todos = () => {
     }
   }, []);
 
-  const todosUncompleted = todos.filter((todo) => todo.isDone === 0);
-  const todosCompleted = todos.filter((todo) => todo.isDone === 1);
+  const todosNotCompleted = todos.filter(
+    (todo) => !todo.isDone && new Date(todo.dueDate) < today
+  );
+  const todosUncompleted = todos.filter(
+    (todo) => !todo.isDone && new Date(todo.dueDate) >= today
+  );
+  const todosCompleted = todos.filter((todo) => todo.isDone);
 
   const DATA = [
     {
@@ -67,8 +71,12 @@ const Todos = () => {
       data: todosUncompleted,
     },
     {
-      title: "Completed",
+      title: "Completed:",
       data: todosCompleted,
+    },
+    {
+      title: "Not completed...",
+      data: todosNotCompleted,
     },
   ];
 

@@ -2,11 +2,11 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import dayjs from "dayjs";
 import * as SecureStore from "expo-secure-store";
-import { TOKEN_KEY, useAuth } from "../context/AuthContext";
+import { TOKEN_KEY, useAuth, API_URL } from "../context/AuthContext";
 import { Platform } from "react-native";
 
-const baseURL =
-  Platform.OS === "ios" ? "http://localhost:5000" : "http://10.0.2.2:5000";
+
+const baseURL = API_URL;
 
 const useAxios = () => {
   const { authState } = useAuth();
@@ -24,7 +24,7 @@ const useAxios = () => {
       if (!isExpired) return req;
 
       const response = await axios.post(
-        `${baseURL}/api/authentication/refresh`,
+        `${baseURL}/authentication/refresh`,
         {
           accessToken: authState.token,
           refreshToken: authState.refreshToken,

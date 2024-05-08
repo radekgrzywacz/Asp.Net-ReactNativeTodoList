@@ -28,8 +28,8 @@ export interface DecodedToken {
 export const TOKEN_KEY = "todo_jwt";
 export const API_URL =
   Platform.OS === "ios"
-    ? "http://localhost:5000/api/authentication"
-    : "http://10.0.2.2:5000/api/authentication";
+    ? "http://localhost:5000/api"
+    : "http://10.0.2.2:5000/api";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }: any) => {
     password: string
   ) => {
     try {
-      return await axios.post(`${API_URL}`, { username, email, password });
+      return await axios.post(`${API_URL}/authentication`, { username, email, password });
     } catch (e) {
       return { error: true, msg: (e as any).response.data.msg };
     }
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }: any) => {
   const login = async (userName: string, password: string) => {
     try {
       setIsLoading(true);
-      const result = await axios.post(`${API_URL}/login`, {
+      const result = await axios.post(`${API_URL}/authentication/login`, {
         userName,
         password,
       });
