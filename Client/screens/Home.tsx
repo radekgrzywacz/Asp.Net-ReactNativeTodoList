@@ -8,16 +8,18 @@ import {
   Platform,
 } from "react-native";
 import axios from "axios";
+import useAxios from "../utils/useAxios";
 
 const Home = () => {
   const { authState } = useAuth();
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState("");
+  let api = useAxios();
 
   useEffect(() => {
     if (authState?.id !== undefined) {
       setLoading(true);
-      axios
+      api
         .get(
           Platform.OS === "ios"
             ? `http://localhost:5000/api/users/${authState.id}`

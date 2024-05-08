@@ -10,6 +10,7 @@ import {
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import { Todo } from "../models/todo";
 import axios from "axios";
+import useAxios from "../utils/useAxios";
 
 const CalendarScreen = () => {
   const today = new Date();
@@ -17,10 +18,11 @@ const CalendarScreen = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [dates, setDates] = useState<string[]>([]);
+  let api = useAxios();
 
   useEffect(() => {
     setIsLoading(true);
-    axios
+    api
       .get(
         Platform.OS === "ios"
           ? `http://localhost:5000/api/users/11/todos`

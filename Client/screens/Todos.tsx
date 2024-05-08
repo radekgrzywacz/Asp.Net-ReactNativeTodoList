@@ -16,6 +16,7 @@ import { Todo } from "../models/todo";
 import ModalCalendar from "../components/ModalCalendar";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useAuth } from "../context/AuthContext";
+import useAxios from "../utils/useAxios";
 
 const Todos = () => {
   const { authState } = useAuth();
@@ -30,11 +31,13 @@ const Todos = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(startDate);
 
+  let api = useAxios();
+
 
   useEffect(() => {
     if (authState?.id !== undefined) {
       setLoading(true);
-      axios
+      api
         .get(
           Platform.OS === "ios"
             ? `http://localhost:5000/api/users/${authState.id}/todos`

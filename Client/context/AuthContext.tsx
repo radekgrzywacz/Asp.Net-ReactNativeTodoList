@@ -21,11 +21,11 @@ interface AuthProps {
   onLogout?: () => Promise<any>;
 }
 
-interface DecodedToken {
+export interface DecodedToken {
   [key: string]: string; 
 }
 
-const TOKEN_KEY = "todo_jwt";
+export const TOKEN_KEY = "todo_jwt";
 export const API_URL =
   Platform.OS === "ios"
     ? "http://localhost:5000/api/authentication"

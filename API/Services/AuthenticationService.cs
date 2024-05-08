@@ -9,6 +9,7 @@ using API.ExceptionsHandling.Exceptions;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -79,7 +80,12 @@ public class AuthenticationService : IAuthenticationService
     {
         var principal = GetPrincipalFromExpiredToken(tokenDto.AccessToken);
 
-        var user = await _userManager.FindByNameAsync(principal.Identity.Name);
+        var userId = _userManager.GetUserId(principal);
+        if (userId == null)
+        {
+            throw new UserNotFoundException(null);
+        } 
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null || user.RefreshToken != tokenDto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
         {
             throw new RefreshTokenBadRequest();
@@ -138,7 +144,7 @@ public class AuthenticationService : IAuthenticationService
             ValidateIssuer = false,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.TokenKey)),
-            ValidateLifetime = true
+            ValidateLifetime = false
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
