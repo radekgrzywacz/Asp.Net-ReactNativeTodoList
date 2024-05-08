@@ -8,12 +8,69 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
+import useAxios from "../utils/useAxios";
+import { useAuth, API_URL } from "../context/AuthContext";
 
-const ModalCalendar = ({ visible, onClose, onSubmit, startDate, selectedDate, onDateChange }) => {
+interface TodoCreationParams {
+  appUserId: string;
+  title: string;
+  dueDate: Date;
+}
+
+interface CalendarParams {
+  visible: boolean;
+  onClose: any;
+  today: Date;
+  todo: string;
+  setTodo: any;
+}
+const ModalCalendar = ({
+  visible,
+  onClose,
+  today,
+  todo,
+  setTodo,
+}: CalendarParams) => {
+  const startDate = getFormatedDate(
+    today.setDate(today.getDate() + 1),
+    "YYYY/MM/DD"
+  );
+  const [selectedDate, setSelectedDate] = useState(startDate);
+  let api = useAxios();
+  const { authState } = useAuth();
+
+  const onCreateTodo = async ({
+    appUserId,
+    title,
+    dueDate,
+  }: TodoCreationParams) => {
+    try {
+      console.log(todo, selectedDate);
+      return await api.post(`${API_URL}/users/${authState?.id}/todos`, {
+        appUserId,
+        title,
+        dueDate,
+      });
+    } catch (error) {
+      return { error: true, msg: (error as any).response.data.msg };
+    }
+  };
+
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
+          <View style={styles.addTodoBox}>
+            <TextInput
+              style={{ flex: 1, fontFamily: "regular", fontSize: 17 }}
+              autoCapitalize="none"
+              autoComplete="off"
+              autoCorrect={false}
+              value={todo}
+              placeholder="Add Item"
+              onChangeText={(text: string) => setTodo(text)}
+            />
+          </View>
           <DatePicker
             options={{
               backgroundColor: "#EEEEEE",
@@ -22,7 +79,7 @@ const ModalCalendar = ({ visible, onClose, onSubmit, startDate, selectedDate, on
             mode="calendar"
             minimumDate={startDate}
             selected={selectedDate}
-            onDateChange={onDateChange}
+            onDateChange={setSelectedDate}
           />
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity
@@ -33,7 +90,9 @@ const ModalCalendar = ({ visible, onClose, onSubmit, startDate, selectedDate, on
             </TouchableOpacity>
             <TouchableOpacity
               style={{ alignSelf: "flex-end" }}
-              onPress={onSubmit}
+              onPress={() => {
+                onCreateTodo({ todo, selectedDate });
+              }}
             >
               <Text>Submit</Text>
             </TouchableOpacity>
@@ -66,6 +125,17 @@ const styles = {
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  addTodoBox: {
+    marginTop: 10,
+    borderWidth: 2,
+    padding: 7,
+    borderRadius: 16,
+    borderColor: "#627254",
+    width: "90%",
+    backgroundColor: "#DDDDDD",
+    flexDirection: "row",
+    marginBottom: 7,
   },
 };
 

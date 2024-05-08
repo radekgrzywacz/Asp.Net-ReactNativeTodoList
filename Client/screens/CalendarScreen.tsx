@@ -23,11 +23,7 @@ const CalendarScreen = () => {
   useEffect(() => {
     setIsLoading(true);
     api
-      .get(
-        Platform.OS === "ios"
-          ? `http://localhost:5000/api/users/11/todos`
-          : `http://10.0.2.2:5000/api/users/11/todos`
-      )
+      .get(`http://10.0.2.2:5000/api/users/11/todos`)
       .then((response) => {
         if (response.data) {
           setTodos(response.data);
@@ -80,8 +76,7 @@ const CalendarScreen = () => {
           }}
         />
       </View>
-      <View style={{ flex: 1, backgroundColor: "red" }}>
-      </View>
+      <View style={{ flex: 1, backgroundColor: "red" }}></View>
     </SafeAreaView>
   );
 };

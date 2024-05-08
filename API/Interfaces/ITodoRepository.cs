@@ -4,5 +4,6 @@ namespace API.Interfaces;
 
 public interface ITodoRepository
 {
-    Task<IEnumerable<Todo>> GetTodos(string userId, bool trackChanges);
+    Task<IEnumerable<Todo>> GetTodosAsync(string userId, bool trackChanges);
+    void CreateTodo(Todo todo);
 }

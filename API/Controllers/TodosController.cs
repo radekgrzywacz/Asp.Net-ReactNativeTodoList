@@ -1,3 +1,4 @@
+using API.DTOs;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,8 +20,18 @@ public class TodosController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetTodosForUser(string userId)
     {
-        var todos = await _service.TodoService.GetTodos(userId, trackChanges: false);
+        var todos = await _service.TodoService.GetTodosAsync(userId, trackChanges: false);
 
         return Ok(todos);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateTodo([FromBody] TodoToCreateDto todo)
+    {
+        if (todo == null) return BadRequest("CompanyForCreationDto object is null");
+
+        var createdTodo = await _service.TodoService.CreateTodo(todo);
+
+        return Ok(createdTodo);
     }
 }

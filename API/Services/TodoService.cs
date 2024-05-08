@@ -1,4 +1,5 @@
 using API.DTOs;
+using API.Entities;
 using API.ExceptionsHandling.Exceptions;
 using API.Interfaces;
 using AutoMapper;
@@ -18,7 +19,7 @@ public class TodoService : ITodoService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<TodoToDisplayDto>> GetTodos(string userId, bool trackChanges)
+    public async Task<IEnumerable<TodoToDisplayDto>> GetTodosAsync(string userId, bool trackChanges)
     {
         var user = await _repositoryManager.AppUser.GetAppUser(userId, trackChanges);
         if (user == null)
@@ -26,10 +27,22 @@ public class TodoService : ITodoService
             throw new UserNotFoundException(userId);
         }
 
-        var todosFromDb = await _repositoryManager.Todo.GetTodos(userId, trackChanges);
+        var todosFromDb = await _repositoryManager.Todo.GetTodosAsync(userId, trackChanges);
 
         var todosDto = _mapper.Map<IEnumerable<TodoToDisplayDto>>(todosFromDb);
 
         return todosDto;
+    }
+
+    public async Task<TodoToDisplayDto> CreateTodo(TodoToCreateDto todo)
+    {
+        var todoEntity = _mapper.Map<Todo>(todo);
+        
+        _repositoryManager.Todo.CreateTodo(todoEntity);
+        await _repositoryManager.SaveAsync();
+
+        var todoToReturn = _mapper.Map<TodoToDisplayDto>(todoEntity);
+        
+        return todoToReturn;
     }
 }

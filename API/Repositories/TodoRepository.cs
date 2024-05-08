@@ -13,7 +13,7 @@ public class TodoRepository : RepositoryBase<Todo>, ITodoRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Todo>> GetTodos(string userId, bool trackChanges)
+    public async Task<IEnumerable<Todo>> GetTodosAsync(string userId, bool trackChanges)
     {
         var todos = await _context.Todos.Where(t => t.AppUserId == userId)
             .OrderBy(t => t.DueDate)
@@ -21,4 +21,6 @@ public class TodoRepository : RepositoryBase<Todo>, ITodoRepository
 
         return todos;
     }
+
+    public void CreateTodo(Todo todo) => Create(todo);
 }

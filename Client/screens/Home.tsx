@@ -20,11 +20,7 @@ const Home = () => {
     if (authState?.id !== undefined) {
       setLoading(true);
       api
-        .get(
-          Platform.OS === "ios"
-            ? `${API_URL}/users/${authState.id}`
-            : `${API_URL}/users/${authState.id}`
-        )
+        .get(`${API_URL}/users/${authState.id}`)
         .then((response) => {
           if (response.data) {
             setUserName(response.data.userName);
@@ -32,7 +28,7 @@ const Home = () => {
           }
         })
         .catch((error) => {
-          console.log("Error: ",error.response.status);
+          console.log("Error: ", error.response.status);
         })
         .finally(() => {
           setLoading(false);

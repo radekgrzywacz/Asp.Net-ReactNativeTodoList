@@ -23,13 +23,8 @@ const Todos = () => {
   const [isLoading, setLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
   const today = new Date();
-  const startDate = getFormatedDate(
-    today.setDate(today.getDate() + 1),
-    "YYYY/MM/DD"
-  );
   const [todo, setTodo] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(startDate);
 
   let api = useAxios();
 
@@ -37,11 +32,7 @@ const Todos = () => {
     if (authState?.id !== undefined) {
       setLoading(true);
       axios
-        .get(
-          Platform.OS === "ios"
-            ? `${API_URL}/users/${authState.id}/todos`
-            : `${API_URL}/users/${authState.id}/todos`
-        )
+        .get(`${API_URL}/users/${authState.id}/todos`)
         .then((response) => {
           if (response.data) {
             setTodos(response.data);
@@ -110,7 +101,7 @@ const Todos = () => {
       </View>
       {todos.length > 0 ? (
         <SectionList
-          style={{ width: "90%", position: "absolute", top: 75 }}
+          style={{ width: "90%", marginTop: 70 }}
           sections={DATA}
           renderSectionHeader={({ section: { title } }) => (
             <Text
@@ -163,10 +154,9 @@ const Todos = () => {
       <ModalCalendar
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onSubmit={() => console.log("submitted")}
-        startDate={startDate}
-        selectedDate={selectedDate}
-        onDateChange={(date) => setSelectedDate(date)}
+        today={today}
+        todo={todo}
+        setTodo={setTodo}
       />
     </View>
   );
