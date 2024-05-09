@@ -32,8 +32,8 @@ const ModalCalendar = ({
   setTodo,
 }: CalendarParams) => {
   const startDate = getFormatedDate(
-    today.setDate(today.getDate() + 1),
-    "YYYY/MM/DD"
+    today.setDate(today.getDate()),
+    "YYYY-MM-DD"
   );
   const [selectedDate, setSelectedDate] = useState(startDate);
   let api = useAxios();
@@ -46,15 +46,13 @@ const ModalCalendar = ({
     dueDate,
   }: TodoCreationParams) => {
     try {
+      const todo = {
+        appUserId: appUserId,
+        title: title,
+        dueDate: dueDate,
+      };
       return await api
-        .post(`${API_URL}/users/${authState?.id}/todos`, {
-          appUserId: appUserId,
-          title: title,
-          dueDate: dueDate,
-        })
-        .then((response) => {
-          console.log(response);
-        })
+        .post(`${API_URL}/users/${authState?.id}/todos`, todo)
         .catch((error) => {
           console.log(error.response.status);
         });
@@ -101,15 +99,11 @@ const ModalCalendar = ({
             <TouchableOpacity
               style={{ alignSelf: "flex-end" }}
               onPress={() => {
-                console.log(
-                  "before onCreateTodo: User: ",
-                  UserId,
-                  "Todo:",
-                  todo,
-                  "selected date:",
-                  selectedDate
-                );
-                onCreateTodo({ appUserId: UserId, todo, selectedDate });
+                onCreateTodo({
+                  appUserId: UserId,
+                  title: todo,
+                  dueDate: selectedDate,
+                });
               }}
             >
               <Text>Submit</Text>

@@ -16017,3 +16017,12 @@
 2024-05-09 14:39:59.4889 Trace FileTarget(Name=logfile) has 2 layouts
 2024-05-09 14:39:59.4899 Trace FileTarget(Name=logfile): Using appenderFactory: NLog.Internal.FileAppenders.SingleProcessFileAppender+Factory
 2024-05-09 14:39:59.4908 Info Configuration initialized.
+2024-05-09 15:20:33.4645 Debug Targets configured when LogLevel >= Debug for Logger: API.Logging.LoggerManager
+2024-05-09 15:20:33.4654 Debug Logger API.Logging.LoggerManager [Debug] => logfile
+2024-05-09 15:20:33.4654 Debug Logger API.Logging.LoggerManager [Info] => logfile
+2024-05-09 15:20:33.4654 Debug Logger API.Logging.LoggerManager [Warn] => logfile
+2024-05-09 15:20:33.4654 Debug Logger API.Logging.LoggerManager [Error] => logfile
+2024-05-09 15:20:33.4654 Debug Logger API.Logging.LoggerManager [Fatal] => logfile
+2024-05-09 15:20:33.4728 Debug FileTarget(Name=logfile): Preparing for new file: '/Users/radek/Projects/Asp.Net-ReactNativeTodoList/API/bin/Debug/net8.0/.\logs\2024-05-09_logfile.txt'
+2024-05-09 15:20:33.4747 Debug FileTarget(Name=logfile): Creating file appender: '/Users/radek/Projects/Asp.Net-ReactNativeTodoList/API/bin/Debug/net8.0/.\logs\2024-05-09_logfile.txt'
+2024-05-09 15:20:33.4747 Trace FileTarget(Name=logfile): Opening /Users/radek/Projects/Asp.Net-ReactNativeTodoList/API/bin/Debug/net8.0/.\logs\2024-05-09_logfile.txt with allowFileSharedWriting=False
