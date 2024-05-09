@@ -3,8 +3,8 @@ import {
   Text,
   TouchableOpacity,
   Modal,
-  StyleSheet,
   TextInput,
+  StyleSheet
 } from "react-native";
 import React, { useState } from "react";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
@@ -23,6 +23,7 @@ interface CalendarParams {
   today: Date;
   todo: string;
   setTodo: any;
+  setIsUpdated: any;
 }
 const ModalCalendar = ({
   visible,
@@ -30,6 +31,7 @@ const ModalCalendar = ({
   today,
   todo,
   setTodo,
+  setIsUpdated,
 }: CalendarParams) => {
   const startDate = getFormatedDate(
     today.setDate(today.getDate()),
@@ -58,6 +60,12 @@ const ModalCalendar = ({
         });
     } catch (error) {
       return { error: true, msg: (error as any).response.data.msg };
+    } finally {
+      console.log("added");
+      onClose();
+      setTodo("");
+      setSelectedDate(startDate);
+      setIsUpdated(true);
     }
   };
 
@@ -115,7 +123,7 @@ const ModalCalendar = ({
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -149,6 +157,6 @@ const styles = {
     flexDirection: "row",
     marginBottom: 7,
   },
-};
+});
 
 export default ModalCalendar;

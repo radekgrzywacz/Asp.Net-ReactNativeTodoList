@@ -18,6 +18,14 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useAuth, API_URL } from "../context/AuthContext";
 import useAxios from "../utils/useAxios";
 
+function isSameDay(date1: Date, date2: Date) {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}
+
 const Todos = () => {
   const { authState } = useAuth();
   const [isLoading, setLoading] = useState(false);
@@ -25,11 +33,13 @@ const Todos = () => {
   const today = new Date();
   const [todo, setTodo] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
 
   let api = useAxios();
 
   useEffect(() => {
     if (authState?.id !== undefined) {
+      setIsUpdated(false)
       setLoading(true);
       axios
         .get(`${API_URL}/users/${authState.id}/todos`)
@@ -46,13 +56,15 @@ const Todos = () => {
           setLoading(false);
         });
     }
-  }, []);
+  }, [isUpdated]);
 
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
   const todosNotCompleted = todos.filter(
-    (todo) => !todo.isDone && new Date(todo.dueDate) < today
+    (todo) => !todo.isDone && new Date(todo.dueDate) < yesterday
   );
   const todosUncompleted = todos.filter(
-    (todo) => !todo.isDone && new Date(todo.dueDate) >= today
+    (todo) => !todo.isDone && (new Date(todo.dueDate) > today || isSameDay(new Date(todo.dueDate), today))
   );
   const todosCompleted = todos.filter((todo) => todo.isDone);
 
@@ -157,6 +169,7 @@ const Todos = () => {
         today={today}
         todo={todo}
         setTodo={setTodo}
+        setIsUpdated={setIsUpdated}
       />
     </View>
   );
