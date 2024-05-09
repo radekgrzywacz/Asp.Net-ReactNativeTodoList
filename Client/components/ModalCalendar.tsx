@@ -38,6 +38,7 @@ const ModalCalendar = ({
   const [selectedDate, setSelectedDate] = useState(startDate);
   let api = useAxios();
   const { authState } = useAuth();
+  const UserId = authState?.id;
 
   const onCreateTodo = async ({
     appUserId,
@@ -45,12 +46,18 @@ const ModalCalendar = ({
     dueDate,
   }: TodoCreationParams) => {
     try {
-      console.log(todo, selectedDate);
-      return await api.post(`${API_URL}/users/${authState?.id}/todos`, {
-        appUserId,
-        title,
-        dueDate,
-      });
+      return await api
+        .post(`${API_URL}/users/${authState?.id}/todos`, {
+          appUserId: appUserId,
+          title: title,
+          dueDate: dueDate,
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error.response.status);
+        });
     } catch (error) {
       return { error: true, msg: (error as any).response.data.msg };
     }
@@ -79,7 +86,10 @@ const ModalCalendar = ({
             mode="calendar"
             minimumDate={startDate}
             selected={selectedDate}
-            onDateChange={setSelectedDate}
+            onDateChange={(selectedDate) => {
+              const modifiedDate = selectedDate.replaceAll("/", "-");
+              setSelectedDate(modifiedDate);
+            }}
           />
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity
@@ -91,7 +101,15 @@ const ModalCalendar = ({
             <TouchableOpacity
               style={{ alignSelf: "flex-end" }}
               onPress={() => {
-                onCreateTodo({ todo, selectedDate });
+                console.log(
+                  "before onCreateTodo: User: ",
+                  UserId,
+                  "Todo:",
+                  todo,
+                  "selected date:",
+                  selectedDate
+                );
+                onCreateTodo({ appUserId: UserId, todo, selectedDate });
               }}
             >
               <Text>Submit</Text>
