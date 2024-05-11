@@ -141,6 +141,7 @@ const Todos = () => {
                   textStyle={{ fontFamily: "regular" }}
                   style={{ flex: 2 }}
                   isChecked={item.isDone === 0 ? false : true}
+                  onPress={() => console.log("zmiana stanu")}
                 />
               </View>
             );

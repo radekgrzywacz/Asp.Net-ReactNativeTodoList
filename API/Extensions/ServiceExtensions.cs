@@ -2,7 +2,10 @@ using API.Data;
 using API.Interfaces;
 using API.Logging;
 using API.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace API.Extensions;
 
@@ -24,6 +27,11 @@ public static class ServiceExtensions
                     .AllowAnyHeader();
             });
         });
+        
+        services.AddControllers(config =>
+        {
+            config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+        });
 
         services.AddAutoMapper(typeof(Program));
         
@@ -32,7 +40,17 @@ public static class ServiceExtensions
         services.AddScoped<IRepositoryManager, RepositoryManager>();
 
         services.AddScoped<IServiceManager, ServiceManager>();
+        
 
         return services;
     }
+
+    private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() =>
+        new ServiceCollection()
+            .AddLogging()
+            .AddMvc()
+            .AddNewtonsoftJson()
+            .Services.BuildServiceProvider()
+            .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
+            .OfType<NewtonsoftJsonPatchInputFormatter>().First();
 }

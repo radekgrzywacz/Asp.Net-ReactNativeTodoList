@@ -56,8 +56,6 @@ export const AuthProvider = ({ children }: any) => {
         const tokensJson = await SecureStore.getItemAsync(TOKEN_KEY);
         if (tokensJson !== null) {
           const tokens = JSON.parse(tokensJson);
-          console.log("TOKENY: ", tokens);
-
           if (tokens.accessToken && tokens.refreshToken) {
             axios.defaults.headers.common["Authorization"] = `Bearer ${tokens.accessToken}`;
 

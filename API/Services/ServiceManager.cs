@@ -16,7 +16,7 @@ public sealed class ServiceManager : IServiceManager
     public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper,
         UserManager<AppUser> userManager, IOptions<JwtConfiguration> configuration)
     {
-        _todoService = new Lazy<ITodoService>(() => new TodoService(repositoryManager, logger, mapper));
+        _todoService = new Lazy<ITodoService>(() => new TodoService(repositoryManager, logger, mapper, userManager));
         _appUserService = new Lazy<IAppUserService>(() => new AppUserService(repositoryManager, logger, mapper));
         _authenticationService =
             new Lazy<IAuthenticationService>(

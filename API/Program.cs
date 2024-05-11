@@ -1,5 +1,8 @@
 using API.ExceptionsHandling;
 using API.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
 using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +13,6 @@ LogManager.Setup().LoadConfigurationFromFile(string.Concat(Directory.GetCurrentD
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-
-builder.Services.AddControllers();
 
 var app = builder.Build();
 

@@ -12,5 +12,7 @@ public class AutoMapperProfiles : Profile
         CreateMap<AppUser, AppUserDto>();
         CreateMap<Todo, TodoToDisplayDto>();
         CreateMap<TodoToCreateDto, Todo>();
+        CreateMap<TodoForUpdateDto, Todo>();
+        CreateMap<TodoForUpdateDto, Todo>().ReverseMap();
     }
 }

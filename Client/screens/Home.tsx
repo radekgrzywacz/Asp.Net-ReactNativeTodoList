@@ -36,9 +36,11 @@ const Home = () => {
     }
   }, []);
 
+  console.log(authState?.token)
+
   if (loading) {
     return (
-      <View style={[styles.container]}>
+      <View style={styles.loadingIndicator}>
         <ActivityIndicator size="large" />
         <Text>Loading...</Text>
       </View>
@@ -62,6 +64,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEEEEE",
     alignItems: "flex-start",
     justifyContent: "flex-start",
+  },
+  loadingIndicator: {
+    flex: 1,
+    backgroundColor: "#EEEEEE",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 5,
+    paddingBottom: 10,
+    paddingRight: 10,
+    paddingLeft: 10,
   },
   text: {
     fontFamily: "bold",
