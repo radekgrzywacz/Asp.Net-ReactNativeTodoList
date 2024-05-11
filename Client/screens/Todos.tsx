@@ -37,9 +37,28 @@ const Todos = () => {
 
   let api = useAxios();
 
+  const ChangeIsDone = async (todoId: number, value: number) => {
+    await api({
+      method: "patch",
+      url: `${API_URL}/users/${authState?.id}/todos/${todoId}`,
+      data: `
+      [
+        {
+            "op" : "replace",
+            "path": "/isDone",
+            "value": ${value}
+        }
+      ]
+      `,
+      headers: { "Content-Type": "application/json-patch+json" },
+    });
+
+    setIsUpdated(true);
+  };
+
   useEffect(() => {
     if (authState?.id !== undefined) {
-      setIsUpdated(false)
+      setIsUpdated(false);
       setLoading(true);
       axios
         .get(`${API_URL}/users/${authState.id}/todos`)
@@ -64,7 +83,10 @@ const Todos = () => {
     (todo) => !todo.isDone && new Date(todo.dueDate) < yesterday
   );
   const todosUncompleted = todos.filter(
-    (todo) => !todo.isDone && (new Date(todo.dueDate) > today || isSameDay(new Date(todo.dueDate), today))
+    (todo) =>
+      !todo.isDone &&
+      (new Date(todo.dueDate) > today ||
+        isSameDay(new Date(todo.dueDate), today))
   );
   const todosCompleted = todos.filter((todo) => todo.isDone);
 
@@ -141,7 +163,9 @@ const Todos = () => {
                   textStyle={{ fontFamily: "regular" }}
                   style={{ flex: 2 }}
                   isChecked={item.isDone === 0 ? false : true}
-                  onPress={() => console.log("zmiana stanu")}
+                  onPress={() => {
+                    ChangeIsDone(item.id, item.isDone === 1 ? 0 : 1);
+                  }}
                 />
               </View>
             );

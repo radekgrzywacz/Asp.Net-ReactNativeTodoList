@@ -36,8 +36,6 @@ const Home = () => {
     }
   }, []);
 
-  console.log(authState?.token)
-
   if (loading) {
     return (
       <View style={styles.loadingIndicator}>
