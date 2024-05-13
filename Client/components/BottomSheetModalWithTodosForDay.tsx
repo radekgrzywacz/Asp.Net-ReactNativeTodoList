@@ -33,11 +33,20 @@ const BottomSheetModalWithTodosForDay = forwardRef<Ref, Props>((props, ref) => {
   );
 
   const renderItem = useCallback(({ item }: { item: Todo }) => {
-    return (<View style={styles.todoContainer}>
-      <Text style={styles.todoTitle}>{item.title}</Text>
-    </View>);
+    return (
+      <View style={styles.todoContainer}>
+        <Text style={styles.todoTitle}>{item.title}</Text>
+      </View>
+    );
   }, []);
-
+  
+  const renderEmpty = useCallback(() => {
+    return (
+      <View >
+        <Text style={styles.emptyListText}>There are no todos for today!</Text>
+      </View>
+    );
+  }, []);
   return (
     <BottomSheetModal
       ref={ref}
@@ -47,16 +56,22 @@ const BottomSheetModalWithTodosForDay = forwardRef<Ref, Props>((props, ref) => {
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: "#627254" }}
       style={styles.bottomSheet}
+      handleIndicatorStyle={{backgroundColor: "#EEEEEE"}}
     >
       <BottomSheetFlatList
         data={props.todos}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         ListHeaderComponent={() => (
-          <Text style={styles.sheetHeader}>
-            Todos for {date.toDateString()}
-          </Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{flex: 1, height: 2, backgroundColor: '#EEEEEE'}} />
+          <View>
+            <Text style={styles.sheetHeader}>{date.toDateString()}</Text>
+          </View>
+          <View style={{flex: 1, height: 2, backgroundColor: '#EEEEEE'}} />
+        </View>
         )}
+        ListEmptyComponent={renderEmpty}
       />
     </BottomSheetModal>
   );
@@ -73,8 +88,12 @@ const styles = StyleSheet.create({
   sheetHeader: {
     fontFamily: "bold",
     fontSize: 20,
-    alignSelf: "center",
-    marginBottom: 10,
+    //alignSelf: "center",
+    //marginBottom: 10,
+    color: "#EEEEEE",
+    borderBottomWidth: 1,
+    borderBlockColor: "black",
+    textAlign: "center"
   },
   todoContainer: {
     borderWidth: 2,
@@ -93,4 +112,11 @@ const styles = StyleSheet.create({
     color: "black",
     alignSelf: "center",
   },
+  emptyListText: {
+    marginTop: 10,
+    color: "#EEEEEE",
+    fontFamily: "medium",
+    fontSize: 20,
+    alignSelf: "center"
+  }
 });

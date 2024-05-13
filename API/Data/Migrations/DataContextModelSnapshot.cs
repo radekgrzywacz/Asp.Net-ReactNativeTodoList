@@ -110,7 +110,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("Todos");
+                    b.ToTable("Todos", (string)null);
 
                     b.HasData(
                         new

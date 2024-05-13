@@ -10,6 +10,8 @@ public interface ITodoService
     Task<TodoToDisplayDto> GetTodoAsync(string userId, int todoId, bool trackChanges);
     Task<TodoToDisplayDto> CreateTodoAsync(TodoToCreateDto todo);
 
+    Task DeleteTodoAsync(string userId, int todoId, bool trackChanges);
+
     Task<(TodoForUpdateDto todoToPatch, Todo todoEntity)> GetTodoForPatchAsync(string userId, int todoId, bool todoTrackChanges,
         bool userTrackChanges);
 

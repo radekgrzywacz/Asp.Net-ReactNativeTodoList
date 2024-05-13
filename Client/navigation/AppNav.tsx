@@ -1,5 +1,5 @@
 import { View, Text, StatusBar, ActivityIndicator, StyleSheet } from 'react-native'
-import React, { useCallback, useContext } from 'react'
+import React, { useCallback, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native'
 import AuthNavigator from './AuthNavigator'
 import AppNavigator from './AppNavigator'

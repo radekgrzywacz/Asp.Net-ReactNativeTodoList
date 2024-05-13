@@ -14,7 +14,8 @@ public class TodoService : ITodoService
     private readonly IMapper _mapper;
     private readonly UserManager<AppUser> _userManager;
 
-    public TodoService(IRepositoryManager repositoryManager, ILoggerManager loggerManager, IMapper mapper, UserManager<AppUser> userManager)
+    public TodoService(IRepositoryManager repositoryManager, ILoggerManager loggerManager, IMapper mapper,
+        UserManager<AppUser> userManager)
     {
         _repositoryManager = repositoryManager;
         _loggerManager = loggerManager;
@@ -53,16 +54,29 @@ public class TodoService : ITodoService
     public async Task<TodoToDisplayDto> CreateTodoAsync(TodoToCreateDto todo)
     {
         var todoEntity = _mapper.Map<Todo>(todo);
-        
+
         _repositoryManager.Todo.CreateTodo(todoEntity);
         await _repositoryManager.SaveAsync();
 
         var todoToReturn = _mapper.Map<TodoToDisplayDto>(todoEntity);
-        
+
         return todoToReturn;
     }
 
-    public async Task<(TodoForUpdateDto todoToPatch, Todo todoEntity)> GetTodoForPatchAsync(string userId, int todoId, bool todoTrackChanges,
+    public async Task DeleteTodoAsync(string userId, int todoId, bool trackChanges)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) throw new UserNotFoundException(userId);
+
+        var todo = await _repositoryManager.Todo.GetTodoAsync(userId, todoId, trackChanges);
+        if (todo == null) throw new TodoNotFoundException(todoId);
+
+        _repositoryManager.Todo.DeleteTodo(todo);
+        await _repositoryManager.SaveAsync();
+    }
+
+    public async Task<(TodoForUpdateDto todoToPatch, Todo todoEntity)> GetTodoForPatchAsync(string userId, int todoId,
+        bool todoTrackChanges,
         bool userTrackChanges)
     {
         var user = await _repositoryManager.AppUser.GetAppUser(userId, userTrackChanges);

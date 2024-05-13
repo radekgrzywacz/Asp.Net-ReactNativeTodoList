@@ -29,9 +29,17 @@ public class TodosController : ControllerBase
     [HttpGet("{todoId}")]
     public async Task<IActionResult> GetTodoForUser(string userId, int todoId)
     {
-        var todo = _service.TodoService.GetTodoAsync(userId, todoId, trackChanges: false);
+        var todo = await _service.TodoService.GetTodoAsync(userId, todoId, trackChanges: false);
 
         return Ok(todo);
+    }
+
+    [HttpDelete("{todoId}")]
+    public async Task<IActionResult> DeleteTodoForUser(string userId, int todoId)
+    {
+        await _service.TodoService.DeleteTodoAsync(userId, todoId, trackChanges: false);
+
+        return NoContent();
     }
 
     [HttpPost]

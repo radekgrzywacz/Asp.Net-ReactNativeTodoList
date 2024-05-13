@@ -32,7 +32,7 @@ const AppNavigator = () => {
           ),
           headerRight: () => (
             <GestureHandlerRootView>
-              <TouchableOpacity style={{ marginRight: 15 }} onPress={onLogout}>
+              <TouchableOpacity style={{ marginRight: 15, top: 9 }} onPress={onLogout}>
                 <Ionicons name="settings-outline" size={25} color={"white"} />
               </TouchableOpacity>
             </GestureHandlerRootView>

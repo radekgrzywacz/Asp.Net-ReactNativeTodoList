@@ -1,4 +1,10 @@
-import { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -7,30 +13,44 @@ import {
   Platform,
   ActivityIndicator,
 } from "react-native";
-import { Calendar, CalendarList, Agenda } from "react-native-calendars";
+import { Calendar } from "react-native-calendars";
 import { Todo } from "../models/todo";
-import axios from "axios";
 import useAxios from "../utils/useAxios";
+import { API_URL, useAuth } from "../context/AuthContext";
+import BottomSheetModalWithTodosForDay from "../components/BottomSheetModalWithTodosForDay";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import Todos from "./Todos"; 
 
-const CalendarScreen = () => {
+const CalendarScreen = ({navigation}) => {
   const today = new Date();
   const formattedDate = today.toISOString().split("T")[0];
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [dates, setDates] = useState<string[]>([]);
+  const [dates, setDates] = useState({});
+  const { authState } = useAuth();
+  const [date, setDate] = useState("");
   let api = useAxios();
+
+  const sheetRef = useRef<BottomSheetModal>(null);
+
+  const handleOpenPress = (day: string) => {
+    setDate(day);
+    sheetRef.current?.present();
+  };
 
   useEffect(() => {
     setIsLoading(true);
     api
-      .get(`http://10.0.2.2:5000/api/users/11/todos`)
+      .get(`${API_URL}/users/${authState?.id}/todos`)
       .then((response) => {
         if (response.data) {
           setTodos(response.data);
           const dueDates = response.data
-            .map((todo) => todo.dueDate)
+            .map((todo: Todo) => todo.dueDate)
             .reduce(
-              (c, v) =>
+              (c: any, v: any) =>
                 Object.assign(c, {
                   [v]: { selected: false, marked: true, dotColor: "#627254" },
                 }),
@@ -74,9 +94,22 @@ const CalendarScreen = () => {
             textDayFontFamily: "regular",
             arrowColor: "#627254",
           }}
+          style={{ top: 75 }}
+          onDayPress={(day) => {
+            handleOpenPress(day.dateString);
+          }}
         />
       </View>
-      <View style={{ flex: 1, backgroundColor: "red" }}></View>
+      <View style={styles.addButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Todos')}>
+          <Ionicons name="add-circle" size={70} color={"#627254"} />
+        </TouchableOpacity>
+      </View>
+      <BottomSheetModalWithTodosForDay
+        day={date}
+        ref={sheetRef}
+        todos={todos.filter((todo) => todo.dueDate.toString() === date)}
+      />
     </SafeAreaView>
   );
 };
@@ -89,7 +122,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEEEEE",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
   },
   text: {
     fontFamily: "bold",
@@ -98,5 +130,10 @@ const styles = StyleSheet.create({
     width: 350,
     height: 320,
     flex: 1,
+  },
+  addButton: {
+    position: "absolute",
+    right: "2%",
+    bottom: "1%",
   },
 });

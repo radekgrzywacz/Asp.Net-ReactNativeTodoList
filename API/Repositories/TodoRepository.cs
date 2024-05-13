@@ -27,4 +27,5 @@ public class TodoRepository : RepositoryBase<Todo>, ITodoRepository
     }
 
     public void CreateTodo(Todo todo) => Create(todo);
+    public void DeleteTodo(Todo todo) => Delete(todo);
 }

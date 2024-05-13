@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import Reactfrom from "react";
+import { AuthProvider } from "./context/AuthContext";
 import AppNav from "./navigation/AppNav";
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -26,14 +26,15 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
-      <AppNav />
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <AuthProvider>
+          <AppNav />
+        </AuthProvider>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }
-
-
-
 
 const styles = StyleSheet.create({
   container: {

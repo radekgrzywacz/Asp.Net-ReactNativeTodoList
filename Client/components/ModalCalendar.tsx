@@ -4,7 +4,7 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  StyleSheet
+  StyleSheet,
 } from "react-native";
 import React, { useState } from "react";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
@@ -85,10 +85,6 @@ const ModalCalendar = ({
             />
           </View>
           <DatePicker
-            options={{
-              backgroundColor: "#EEEEEE",
-              mainColor: "#627254",
-            }}
             mode="calendar"
             minimumDate={startDate}
             selected={selectedDate}
@@ -96,7 +92,12 @@ const ModalCalendar = ({
               const modifiedDate = selectedDate.replaceAll("/", "-");
               setSelectedDate(modifiedDate);
             }}
+            options={{
+              backgroundColor: "#EEEEEE",
+              mainColor: "#627254",
+            }}
           />
+
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity
               style={{ flex: 1, alignSelf: "flex-start" }}

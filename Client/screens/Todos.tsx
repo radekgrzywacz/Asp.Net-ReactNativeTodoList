@@ -4,14 +4,12 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Platform,
+  Keyboard,
   ActivityIndicator,
   SectionList,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState } from "react";
-import { getFormatedDate } from "react-native-modern-datepicker";
-import axios from "axios";
 import { Todo } from "../models/todo";
 import ModalCalendar from "../components/ModalCalendar";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
@@ -34,6 +32,7 @@ const Todos = () => {
   const [todo, setTodo] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
+  const [animation, setAnimation] = useState("bounceIn");
 
   let api = useAxios();
 
@@ -56,11 +55,24 @@ const Todos = () => {
     setIsUpdated(true);
   };
 
+  const DeleteTodo = async (todoId: number) => {
+    try {
+      await api
+        .delete(`${API_URL}/users/${authState?.id}/todos/${todoId}`)
+        .catch((error) => {
+          alert(error.msg);
+        })
+        .finally(() => setIsUpdated(true));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (authState?.id !== undefined) {
       setIsUpdated(false);
-      setLoading(true);
-      axios
+      //setLoading(true);
+      api
         .get(`${API_URL}/users/${authState.id}/todos`)
         .then((response) => {
           if (response.data) {
@@ -72,7 +84,8 @@ const Todos = () => {
           console.log(error);
         })
         .finally(() => {
-          setLoading(false);
+          Keyboard.dismiss();
+          //setLoading(false);
         });
     }
   }, [isUpdated]);
@@ -167,6 +180,16 @@ const Todos = () => {
                     ChangeIsDone(item.id, item.isDone === 1 ? 0 : 1);
                   }}
                 />
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    alignSelf: "flex-end",
+                    bottom: 22,
+                  }}
+                  onPress={() => DeleteTodo(item.id)}
+                >
+                  <Ionicons name="trash" size={20} color="#616161" />
+                </TouchableOpacity>
               </View>
             );
           }}
@@ -235,6 +258,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "#DDDDDD",
     paddingTop: 7,
+    paddingBottom: 7,
+    //height: "25%"
   },
   dueDate: {
     fontFamily: "semibold",
