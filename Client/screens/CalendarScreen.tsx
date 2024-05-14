@@ -23,7 +23,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Todos from "./Todos"; 
 
-const CalendarScreen = ({navigation}) => {
+const CalendarScreen = ({navigation, isUpdated, setIsUpdated} : any) => {
   const today = new Date();
   const formattedDate = today.toISOString().split("T")[0];
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -67,7 +67,7 @@ const CalendarScreen = ({navigation}) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+  }, [isUpdated]);
 
   if (isLoading) {
     return (

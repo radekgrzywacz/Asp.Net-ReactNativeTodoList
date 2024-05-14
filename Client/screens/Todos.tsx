@@ -24,14 +24,14 @@ function isSameDay(date1: Date, date2: Date) {
   );
 }
 
-const Todos = () => {
+const Todos = ({isUpdated, setIsUpdated} : any) => {
   const { authState } = useAuth();
   const [isLoading, setLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
   const today = new Date();
   const [todo, setTodo] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [isUpdated, setIsUpdated] = useState(false);
+  //const [isUpdated, setIsUpdated] = useState(false);
   const [animation, setAnimation] = useState("bounceIn");
 
   let api = useAxios();
