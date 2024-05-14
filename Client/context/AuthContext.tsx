@@ -22,7 +22,7 @@ interface AuthProps {
 }
 
 export interface DecodedToken {
-  [key: string]: string; 
+  [key: string]: string;
 }
 
 export const TOKEN_KEY = "todo_jwt";
@@ -57,7 +57,9 @@ export const AuthProvider = ({ children }: any) => {
         if (tokensJson !== null) {
           const tokens = JSON.parse(tokensJson);
           if (tokens.accessToken && tokens.refreshToken) {
-            axios.defaults.headers.common["Authorization"] = `Bearer ${tokens.accessToken}`;
+            axios.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${tokens.accessToken}`;
 
             const decodedToken: DecodedToken = jwtDecode(tokens.accessToken);
             const userId =
@@ -87,19 +89,27 @@ export const AuthProvider = ({ children }: any) => {
     password: string
   ) => {
     try {
-      return await axios.post(`${API_URL}/authentication`, { username, email, password });
+      return await axios.post(`${API_URL}/authentication`, {
+        username,
+        email,
+        password,
+      });
     } catch (e) {
-      return { error: true, msg: (e as any).response.data.msg };
+      return { error: true, msg: (e as any).response };
     }
   };
 
   const login = async (userName: string, password: string) => {
     try {
       setIsLoading(true);
-      const result = await axios.post(`${API_URL}/authentication/login`, {
-        userName,
-        password,
-      });
+      const result = await axios
+        .post(`${API_URL}/authentication/login`, {
+          userName,
+          password,
+        })
+        .catch((error) => {
+          console.log("Error2: ", error.response);
+        });
 
       const decodedToken: DecodedToken = jwtDecode(result.data.accessToken);
       const userId =
@@ -121,7 +131,8 @@ export const AuthProvider = ({ children }: any) => {
       await SecureStore.setItemAsync(TOKEN_KEY, JSON.stringify(result.data));
       setIsLoading(false);
     } catch (e) {
-      return { error: true, msg: (e as any).response.data.msg };
+      // return { error: true, msg: (e as any).response.data.msg };
+      //console.log( (e as any).response.data.msg)
     }
   };
 

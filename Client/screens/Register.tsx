@@ -6,16 +6,18 @@ import {
   Platform,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
-
+import { FlatList } from "react-native-gesture-handler";
 
 const Register = ({ navigation }) => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const { onLogin, onRegister } = useAuth();
 
   const login = async () => {
@@ -25,10 +27,28 @@ const Register = ({ navigation }) => {
     }
   };
 
+  const parseErrorMessages = (
+    errorResponse: Record<string, string[]>
+  ): string[] => {
+    const errors: string[] = [];
+    if (userName.length === 0 || password.length === 0 || email.length === 0) {
+      errors.push("You can't leave any field empty!");
+    } else {
+      for (const key in errorResponse) {
+        if (errorResponse.hasOwnProperty(key)) {
+          errors.push(...errorResponse[key]);
+        }
+      }
+    }
+    return errors;
+  };
+
   const register = async () => {
     const result = await onRegister!(userName, email, password);
     if (result && result.error) {
-      alert(result.msg);
+      const errorMessagesArray = parseErrorMessages(result.msg.data);
+      setErrorMessages(errorMessagesArray);
+      //Alert.alert("Registration Error", errorMessages.join("\n"));
     } else {
       login();
     }
@@ -129,11 +149,19 @@ const Register = ({ navigation }) => {
         >
           <Text style={styles.registerButtonText}>Register</Text>
         </TouchableOpacity>
+        {errorMessages.length > 0 && (
+          <View style={styles.errorContainer}>
+            <FlatList
+              data={errorMessages}
+              renderItem={({ item }) => {
+                return <Text style={styles.errorText}>{`\u2022 ${item}`}</Text>;
+              }}
+            />
+          </View>
+        )}
       </View>
       <View style={styles.footer}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Login")}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <Text
             style={styles.text}
             suppressHighlighting={true} // Add this prop to suppress the highlight
@@ -251,6 +279,23 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: "row",
-    paddingBottom: 40
+    paddingBottom: 40,
+  },
+  errorContainer: {
+    position: "absolute",
+    top: "104%",
+    //marginTop: 10,
+    padding: 10,
+    //backgroundColor: "#f8d7da",
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  errorText: {
+    //color: "#721c24",
+    color: "black",
+    fontFamily: "regular",
+    fontSize: 14,
+    textAlign: "center",
   },
 });

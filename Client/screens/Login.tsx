@@ -19,7 +19,7 @@ const LoginScreen = ({ navigation }) => {
   const login = async () => {
     const result = await onLogin!(userName, password);
     if (result && result.error) {
-      alert(result.msg);
+      alert(result.data.status);
     }
   };
 
