@@ -494,3 +494,4 @@ API/todoapp.db
 */.idea/
 API/TodoList.sln
 /identifier.sqlite
+API/internal_logs/internallog.txt
