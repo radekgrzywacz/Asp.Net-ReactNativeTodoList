@@ -7,19 +7,40 @@ import {
   TextInput,
   Platform,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const LoginScreen = ({ navigation }) => {
-  const [userName, setUserName] = useState("radox");
-  const [password, setPassword] = useState("Pa$$w0rd");
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const [unauthorized, setUnauthorized] = useState("");
   const { onLogin } = useAuth();
+
+  const parseErrorMessages = (
+    errorResponse: Record<string, string[]>
+  ): string[] => {
+    const errors: string[] = [];
+    for (const key in errorResponse) {
+      if (errorResponse.hasOwnProperty(key)) {
+        errors.push(...errorResponse[key]);
+      }
+    }
+    return errors;
+  };
 
   const login = async () => {
     const result = await onLogin!(userName, password);
     if (result && result.error) {
-      alert(result.data.status);
+      if (result.msg.status === 401) {
+        setUnauthorized("Login or password are invalid.");  
+        setErrorMessages([unauthorized])      
+      } else {
+        const errorMessagesArray = parseErrorMessages(result.msg.errors);
+        setErrorMessages(errorMessagesArray);
+      }
     }
   };
 
@@ -89,7 +110,7 @@ const LoginScreen = ({ navigation }) => {
         >
           <Text
             style={styles.text}
-            suppressHighlighting={true} // Add this prop to suppress the highlight
+            suppressHighlighting={true} 
           >
             Forgot password?
           </Text>
@@ -103,6 +124,16 @@ const LoginScreen = ({ navigation }) => {
         >
           <Text style={styles.signinButtonText}>Sign in</Text>
         </TouchableOpacity>
+        {errorMessages.length > 0 && ( 
+          <View style={styles.errorContainer}>
+            <FlatList
+              data={errorMessages}
+              renderItem={({ item }) => {
+                return <Text style={styles.errorText}>{`\u2022 ${item}`}</Text>;
+              }}
+            />
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -235,5 +266,22 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 20,
     marginLeft: 7,
+  },
+  errorContainer: {
+    position: "absolute",
+    top: "104%",
+    //marginTop: 10,
+    padding: 10,
+    //backgroundColor: "#f8d7da",
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  errorText: {
+    //color: "#721c24",
+    color: "black",
+    fontFamily: "regular",
+    fontSize: 14,
+    textAlign: "center",
   },
 });

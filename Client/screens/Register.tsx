@@ -48,7 +48,7 @@ const Register = ({ navigation }) => {
     if (result && result.error) {
       const errorMessagesArray = parseErrorMessages(result.msg.data);
       setErrorMessages(errorMessagesArray);
-      //Alert.alert("Registration Error", errorMessages.join("\n"));
+      Alert.alert("Registration Error", errorMessages.join("\n"));
     } else {
       login();
     }

@@ -36,7 +36,10 @@ const BottomSheetModalWithTodosForDay = forwardRef<Ref, Props>((props, ref) => {
     return (
       <View style={styles.todoContainer}>
         <Text style={styles.todoTitle}>{item.title}</Text>
-      </View>
+        {item.isDone === 1 && (
+          <Ionicons name="checkmark-circle" size={24} color="#627254" style={{flexDirection: "row", paddingRight: 16, top: 1}} />
+        )}
+       </View>
     );
   }, []);
   
@@ -104,13 +107,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDDDDD",
     paddingTop: 7,
     paddingBottom: 7,
-    //height: "25%"
+    flexDirection: "row",
   },
   todoTitle: {
+    flex: 2,
     fontFamily: "semibold",
     fontSize: 18,
     color: "black",
     alignSelf: "center",
+    paddingLeft: 16,
   },
   emptyListText: {
     marginTop: 10,

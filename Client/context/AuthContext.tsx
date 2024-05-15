@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import "core-js/stable/atob";
 import { jwtDecode } from "jwt-decode";
 
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: any) => {
           }
         }
       } catch (e) {
-        console.error("Token loading error:", e);
+        Alert.alert(`Token loading error: ${e}`);
       }
     };
 
@@ -102,15 +102,10 @@ export const AuthProvider = ({ children }: any) => {
   const login = async (userName: string, password: string) => {
     try {
       setIsLoading(true);
-      const result = await axios
-        .post(`${API_URL}/authentication/login`, {
-          userName,
-          password,
-        })
-        .catch((error) => {
-          console.log("Error2: ", error.response);
-        });
-
+      const result = await axios.post(`${API_URL}/authentication/login`, {
+        userName,
+        password,
+      });
       const decodedToken: DecodedToken = jwtDecode(result.data.accessToken);
       const userId =
         decodedToken[
@@ -131,8 +126,7 @@ export const AuthProvider = ({ children }: any) => {
       await SecureStore.setItemAsync(TOKEN_KEY, JSON.stringify(result.data));
       setIsLoading(false);
     } catch (e) {
-      // return { error: true, msg: (e as any).response.data.msg };
-      //console.log( (e as any).response.data.msg)
+      return { error: true, msg: (e as any).response.data };
     }
   };
 
