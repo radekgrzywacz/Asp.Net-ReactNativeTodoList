@@ -22,7 +22,7 @@ const useAxios = () => {
       const isExpired = dayjs.unix(decodedToken["exp"]).diff(dayjs()) < 1;
 
       if (!isExpired) return req;
-
+      console.log("refreshing...", new Date());
       const response = await axios.post(
         `${baseURL}/authentication/refresh`,
         {
@@ -35,6 +35,7 @@ const useAxios = () => {
 
       authState.refreshToken = response.data.refreshToken;
       authState.token = response.data.accessToken;
+      console.log("storage interceptor refresh: ", authState.refreshToken);
 
       req.headers.Authorization = `Bearer ${response.data.accessToken}`;
       return req;

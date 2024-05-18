@@ -54,14 +54,11 @@ const ModalCalendar = ({
         dueDate: dueDate,
       };
       return await api
-        .post(`${API_URL}/users/${authState?.id}/todos`, todo)
-        .catch((error) => {
-          console.log(error.response.status);
-        });
+        .post(`${API_URL}/users/${authState?.id}/todos`, todo);
     } catch (error) {
-      return { error: true, msg: (error as any).response.data.msg };
+      console.log(error)
+      //return { error: true, msg: (error as any).response.data.msg };
     } finally {
-      console.log("added");
       onClose();
       setTodo("");
       setSelectedDate(startDate);

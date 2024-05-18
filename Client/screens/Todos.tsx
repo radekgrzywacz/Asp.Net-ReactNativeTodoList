@@ -16,92 +16,24 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useAuth, API_URL } from "../context/AuthContext";
 import useAxios from "../utils/useAxios";
 
-function isSameDay(date1: Date, date2: Date) {
-  return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate()
-  );
-}
-
-const Todos = ({isUpdated, setIsUpdated} : any) => {
+const Todos = ({
+  isUpdated,
+  setIsUpdated,
+  todos,
+  setTodos,
+  todosCompleted,
+  todosUncompleted,
+  todosNotCompleted,
+  ChangeIsDone,
+  DeleteTodo
+}: any) => {
   const { authState } = useAuth();
   const [isLoading, setLoading] = useState(false);
-  const [todos, setTodos] = useState<Todo[]>([]);
   const today = new Date();
   const [todo, setTodo] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  //const [isUpdated, setIsUpdated] = useState(false);
-  const [animation, setAnimation] = useState("bounceIn");
 
-  let api = useAxios();
-
-  const ChangeIsDone = async (todoId: number, value: number) => {
-    await api({
-      method: "patch",
-      url: `${API_URL}/users/${authState?.id}/todos/${todoId}`,
-      data: `
-      [
-        {
-            "op" : "replace",
-            "path": "/isDone",
-            "value": ${value}
-        }
-      ]
-      `,
-      headers: { "Content-Type": "application/json-patch+json" },
-    });
-
-    setIsUpdated(true);
-  };
-
-  const DeleteTodo = async (todoId: number) => {
-    try {
-      await api
-        .delete(`${API_URL}/users/${authState?.id}/todos/${todoId}`)
-        .catch((error) => {
-          alert(error.msg);
-        })
-        .finally(() => setIsUpdated(true));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    if (authState?.id !== undefined) {
-      setIsUpdated(false);
-      //setLoading(true);
-      api
-        .get(`${API_URL}/users/${authState.id}/todos`)
-        .then((response) => {
-          if (response.data) {
-            setTodos(response.data);
-          } else {
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          Keyboard.dismiss();
-          //setLoading(false);
-        });
-    }
-  }, [isUpdated]);
-
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-  const todosNotCompleted = todos.filter(
-    (todo) => !todo.isDone && new Date(todo.dueDate) < yesterday
-  );
-  const todosUncompleted = todos.filter(
-    (todo) =>
-      !todo.isDone &&
-      (new Date(todo.dueDate) > today ||
-        isSameDay(new Date(todo.dueDate), today))
-  );
-  const todosCompleted = todos.filter((todo) => todo.isDone);
+  
 
   const DATA = [
     {
@@ -171,7 +103,7 @@ const Todos = ({isUpdated, setIsUpdated} : any) => {
                   size={20}
                   fillColor="#76885B"
                   text={item.title}
-                  bounceEffectIn={0.3}
+                  bounceEffectIn={0.9}
                   iconStyle={{ borderWidth: 2, borderColor: "#76885B" }}
                   textStyle={{ fontFamily: "regular" }}
                   style={{ flex: 2 }}

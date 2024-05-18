@@ -1,7 +1,5 @@
 import React, {
-  useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -10,7 +8,6 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
-  Platform,
   ActivityIndicator,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
@@ -21,7 +18,6 @@ import BottomSheetModalWithTodosForDay from "../components/BottomSheetModalWithT
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import Todos from "./Todos"; 
 
 const CalendarScreen = ({navigation, isUpdated, setIsUpdated} : any) => {
   const today = new Date();

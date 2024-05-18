@@ -73,6 +73,7 @@ export const AuthProvider = ({ children }: any) => {
               authenticated: true,
               id: userId,
             });
+            console.log("load token refresh: ", tokens.refreshToken)
           }
         }
       } catch (e) {
@@ -122,6 +123,8 @@ export const AuthProvider = ({ children }: any) => {
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${result.data.accessToken}`;
+
+      console.log("login refresh: ",result.data.refreshToken);
 
       await SecureStore.setItemAsync(TOKEN_KEY, JSON.stringify(result.data));
       setIsLoading(false);
