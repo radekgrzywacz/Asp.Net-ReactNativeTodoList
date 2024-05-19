@@ -7,6 +7,7 @@ import {
   Keyboard,
   ActivityIndicator,
   SectionList,
+  Platform,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState } from "react";
@@ -181,6 +182,19 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     position: "absolute",
     top: 5,
+    ...Platform.select({
+      android: {
+        elevation: 5,
+      },
+      ios: {
+        shadowOffset: {
+          width: 1,
+          height: 1,
+        },
+        shadowColor: "black",
+        shadowOpacity: 0.3,
+      },
+    }),
   },
   todoContainer: {
     borderWidth: 2,
@@ -192,6 +206,19 @@ const styles = StyleSheet.create({
     paddingTop: 7,
     paddingBottom: 7,
     //height: "25%"
+    ...Platform.select({
+      android: {
+        elevation: 5,
+      },
+      ios: {
+        shadowOffset: {
+          width: 1,
+          height: 1,
+        },
+        shadowColor: "black",
+        shadowOpacity: 0.3,
+      },
+    }),
   },
   dueDate: {
     fontFamily: "semibold",

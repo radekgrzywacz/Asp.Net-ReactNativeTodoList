@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { useFonts } from "expo-font";
 import Reactfrom from "react";
 import { AuthProvider } from "./context/AuthContext";
-import AppNav from "./navigation/AppNav";
+import AppNav from "./navigation/MainNavigator";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 

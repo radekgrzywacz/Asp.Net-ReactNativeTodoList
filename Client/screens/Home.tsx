@@ -8,20 +8,13 @@ import {
   Keyboard,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import useAxios from "../utils/useAxios";
 import { FlatList } from "react-native-gesture-handler";
 import { Todo } from "../models/todo";
 import BouncyCheckbox from "react-native-bouncy-checkbox/build/dist/BouncyCheckbox";
 import Ionicons from "@expo/vector-icons/Ionicons";
-
-function isSameDay(date1: Date, date2: Date) {
-  return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate()
-  );
-}
 
 const Home = ({
   isUpdated,
@@ -42,17 +35,22 @@ const Home = ({
 
   useEffect(() => {
     if (authState?.id !== undefined) {
+      console.log("auth state id before username intercept: ", authState.id)
       setLoading(true);
+      console.log(`przed user interceptor uri: ${API_URL}/users/${authState.id}`)
       api
         .get(`${API_URL}/users/${authState.id}`)
         .then((response) => {
+          console.log("Po user interceptor")
           if (response.data) {
             setUserName(response.data.userName);
           } else {
+            setUserName("there");
           }
         })
         .catch((error) => {
           console.log("Error: ", error.response.status);
+          setUserName("there");
         })
         .finally(() => {
           setLoading(false);
@@ -69,7 +67,6 @@ const Home = ({
         .then((response) => {
           if (response.data) {
             setTodos(response.data);
-          } else {
           }
         })
         .catch((error) => {
@@ -95,7 +92,7 @@ const Home = ({
     <View style={styles.container}>
       <View>
         <Text style={styles.textWelcome}>
-          Hi {userName !== null ? userName : "there"}!
+          Hi {userName}!
         </Text>
         <Text style={styles.textWelcome2}>Here is your recap:</Text>
       </View>
@@ -277,6 +274,19 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
     fontSize: 30,
     color: "#616161",
+    ...Platform.select({
+      android: {
+        elevation: 3,
+      },
+      ios: {
+        shadowOffset: {
+          width: 2,
+          height: 1,
+        },
+        shadowColor: "black",
+        shadowOpacity: 0.2,
+      },
+    }),
   },
   textWelcome2: {
     fontFamily: "bold",
@@ -285,6 +295,19 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: "#616161",
     //marginBottom: "-10%"
+    ...Platform.select({
+      android: {
+        elevation: 3,
+      },
+      ios: {
+        shadowOffset: {
+          width: 1,
+          height: 1,
+        },
+        shadowColor: "black",
+        shadowOpacity: 0.2,
+      },
+    }),
   },
   boxContainer: {
     flexDirection: "column",
@@ -299,6 +322,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     //position: "relative",
     marginVertical: 7,
+    ...Platform.select({
+      android: {
+        elevation: 5,
+      },
+      ios: {
+        shadowOffset: {
+          width: 3,
+          height: 2,
+        },
+        shadowColor: "black",
+        shadowOpacity: 0.3,
+      },
+    }),
   },
   statsText: {
     color: "#EEEEEE",
@@ -316,9 +352,23 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
   },
   upcomingTodosText: {
+    marginBottom: 6,
     fontFamily: "semibold",
     color: "#616161",
     fontSize: 24,
+    ...Platform.select({
+      android: {
+        elevation: 5,
+      },
+      ios: {
+        shadowOffset: {
+          width: 3,
+          height: 2,
+        },
+        shadowColor: "black",
+        shadowOpacity: 0.3,
+      },
+    }),
   },
   todoContainer: {
     borderWidth: 2,
@@ -330,6 +380,19 @@ const styles = StyleSheet.create({
     paddingTop: 7,
     paddingBottom: 7,
     //height: "25%"
+    ...Platform.select({
+      android: {
+        elevation: 5,
+      },
+      ios: {
+        shadowOffset: {
+          width: 1,
+          height: 1,
+        },
+        shadowColor: "black",
+        shadowOpacity: 0.3,
+      },
+    }),
   },
   dueDate: {
     fontFamily: "semibold",

@@ -1,4 +1,4 @@
-import { Button, Platform, View } from "react-native";
+import { View } from "react-native";
 import Home from "../screens/Home";
 import CalendarScreen from "../screens/CalendarScreen";
 import Todos from "../screens/Todos";
@@ -23,7 +23,7 @@ function isSameDay(date1: Date, date2: Date) {
   );
 }
 
-const AppNavigator = () => {
+const AppNavigator = ({ navigation }) => {
   const { onLogout, authState } = useAuth();
   const [isUpdated, setIsUpdated] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -94,7 +94,7 @@ const AppNavigator = () => {
           <GestureHandlerRootView>
             <TouchableOpacity
               style={{ marginRight: 15, top: 9 }}
-              onPress={onLogout}
+              onPress={() => navigation.openDrawer()}
             >
               <Ionicons name="settings-outline" size={25} color={"white"} />
             </TouchableOpacity>
@@ -168,6 +168,3 @@ const AppNavigator = () => {
 };
 
 export default AppNavigator;
-function setLoading(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}

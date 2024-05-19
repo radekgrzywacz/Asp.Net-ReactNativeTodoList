@@ -28,7 +28,7 @@ export interface DecodedToken {
 export const TOKEN_KEY = "todo_jwt";
 export const API_URL =
   Platform.OS === "ios"
-    ? "http://localhost:5000/api"
+    ? "http://172.20.10.13:5000/api"
     : "http://10.0.2.2:5000/api";
 const AuthContext = createContext<AuthProps>({});
 
@@ -74,6 +74,7 @@ export const AuthProvider = ({ children }: any) => {
               id: userId,
             });
             console.log("load token refresh: ", tokens.refreshToken)
+            console.log("load token token: ", tokens.accessToken)
           }
         }
       } catch (e) {
