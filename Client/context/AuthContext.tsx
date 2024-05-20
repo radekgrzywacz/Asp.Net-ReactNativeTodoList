@@ -28,7 +28,7 @@ export interface DecodedToken {
 export const TOKEN_KEY = "todo_jwt";
 export const API_URL =
   Platform.OS === "ios"
-    ? "http://172.20.10.13:5000/api"
+    ? "http://localhost:5000/api"
     : "http://10.0.2.2:5000/api";
 const AuthContext = createContext<AuthProps>({});
 

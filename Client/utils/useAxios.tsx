@@ -18,11 +18,14 @@ const useAxios = () => {
   });
 
   const onRefresh = (token: string) => {
+    console.log("subs: ", refreshSubscribers.length);
     refreshSubscribers.map((callback: any) => callback(token));
   };
 
   const addRefreshSubscriber = (callback: any) => {
+    console.log("w addref: ", callback);
     refreshSubscribers.push(callback);
+    console.log("po addref");
   };
 
   axiosInstance.interceptors.request.use(async (req) => {
@@ -31,45 +34,48 @@ const useAxios = () => {
       const isExpired = dayjs.unix(decodedToken["exp"]).diff(dayjs()) < 1;
 
       if (!isExpired) return req;
+
       if (!isRefreshing) {
         isRefreshing = true;
         console.log("refreshing...", new Date());
-        try {
-          const response = await axios.post(
-            `${baseURL}/authentication/refresh`,
-            {
-              accessToken: authState.token,
-              refreshToken: authState.refreshToken,
-            }
-          );
+        try{
+        const response = await axios.post(`${baseURL}/authentication/refresh`, {
+          accessToken: authState.token,
+          refreshToken: authState.refreshToken,
+        });
 
-          await SecureStore.setItemAsync(
-            TOKEN_KEY,
-            JSON.stringify(response.data)
-          );
+        await SecureStore.setItemAsync(
+          TOKEN_KEY,
+          JSON.stringify(response.data)
+        );
 
-          authState.refreshToken = response.data.refreshToken;
-          authState.token = response.data.accessToken;
-          console.log("storage interceptor refresh: ", authState.refreshToken);
+        authState.refreshToken = response.data.refreshToken;
+        authState.token = response.data.accessToken;
+        console.log("storage interceptor refresh: ", authState.refreshToken);
 
-          req.headers.Authorization = `Bearer ${response.data.accessToken}`;
-          onRefresh(response.data.accessToken);
-        } catch (error) {
-          console.log("Refresh token error: ", error);
-        } finally {
-          isRefreshing = false;
-          refreshSubscribers = [];
-        }
+        
+        req.headers.Authorization = `Bearer ${response.data.accessToken}`;
+        onRefresh(response.data.accessToken);
+        console.log("USER ID FROM INTERCEPT: ", authState.id);
+      } catch (error){
+        console.log("Error: ", error)
+      } finally{
+        isRefreshing = false;
+        refreshSubscribers = [];
       }
 
       return new Promise((resolve) => {
-        addRefreshSubscriber((token: string) => {
+        addRefreshSubscriber((token:string) => {
           req.headers.Authorization = `Bearer ${token}`;
           resolve(req);
         });
       });
+      }
     }
+    console.log("Koniec intercepta")
+    return req;
   });
+
   return axiosInstance;
 };
 
