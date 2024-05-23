@@ -35,13 +35,10 @@ const Home = ({
 
   useEffect(() => {
     if (authState?.id !== undefined) {
-      console.log("auth state id before username intercept: ", authState.id)
       setLoading(true);
-      console.log(`przed user interceptor uri: ${API_URL}/users/${authState.id}`)
       api
         .get(`${API_URL}/users/${authState.id}`)
         .then((response) => {
-          console.log("Po user interceptor")
           if (response.data) {
             const name = response.data.userName;
             if(name) setUserName(name);
@@ -52,45 +49,33 @@ const Home = ({
         .catch((error) => {
           console.log("Error: ", error.response.status);
           setUserName("there");
+        })
+        .finally(() => {
+          setLoading(false);
         });
-        api
+    }
+  }, []);
+
+  useEffect(() => {
+    if (authState?.id !== undefined) {
+      setIsUpdated(false);
+      setLoading(true);
+      api
         .get(`${API_URL}/users/${authState.id}/todos`)
         .then((response) => {
           if (response.data) {
-            console.log("po todos interceptor")
             setTodos(response.data);
           }
         })
         .catch((error) => {
           console.log(error);
         })
+        .finally(() => {
+          Keyboard.dismiss();
+          setLoading(false);
+        });
     }
-    setLoading(false);
-    console.log("po user effect: ", userName)
   }, [isUpdated]);
-
-  // useEffect(() => {
-  //   if (authState?.id !== undefined) {
-  //     setIsUpdated(false);
-  //     setLoading(true);
-  //     console.log("przed todos interceptor")
-  //     api
-  //       .get(`${API_URL}/users/${authState.id}/todos`)
-  //       .then((response) => {
-  //         if (response.data) {
-  //           console.log("po todos interceptor")
-  //           setTodos(response.data);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       })
-  //       .finally(() => {
-  //         Keyboard.dismiss();
-  //         setLoading(false);
-  //       });
-  //   }
-  // }, [isUpdated]);
 
   if (loading) {
     return (

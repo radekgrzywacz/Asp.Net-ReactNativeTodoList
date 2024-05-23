@@ -18,32 +18,20 @@ const useAxios = () => {
   });
 
   const onRefresh = (token: string) => {
-    console.log("subs: ", refreshSubscribers.length);
     refreshSubscribers.map((callback: any) => callback(token));
   };
 
   const addRefreshSubscriber = (callback: any) => {
-    console.log("w addref: ", callback);
     refreshSubscribers.push(callback);
-    console.log("po addref");
   };
 
-  axiosInstance.interceptors.request.use(async (req) => {
-    if (authState?.token) {
-      const decodedToken = jwtDecode(authState.token);
-      const isExpired = dayjs.unix(decodedToken["exp"]).diff(dayjs()) < 1;
-
-      if (!isExpired) return req;
-
-      if (!isRefreshing) {
-        isRefreshing = true;
-        console.log("refreshing...", new Date());
-        try{
+  const refreshAccessToken = async () => {
+    try {
+      if (authState) {
         const response = await axios.post(`${baseURL}/authentication/refresh`, {
           accessToken: authState.token,
           refreshToken: authState.refreshToken,
         });
-
         await SecureStore.setItemAsync(
           TOKEN_KEY,
           JSON.stringify(response.data)
@@ -51,32 +39,68 @@ const useAxios = () => {
 
         authState.refreshToken = response.data.refreshToken;
         authState.token = response.data.accessToken;
-        console.log("storage interceptor refresh: ", authState.refreshToken);
-
-        
-        req.headers.Authorization = `Bearer ${response.data.accessToken}`;
         onRefresh(response.data.accessToken);
-        console.log("USER ID FROM INTERCEPT: ", authState.id);
-      } catch (error){
-        console.log("Error: ", error)
-      } finally{
-        isRefreshing = false;
-        refreshSubscribers = [];
+
+        return response.data.accessToken;
+      } else {
+        throw new Error("No auth state");
+      }
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      throw error;
+    }
+  };
+
+  axiosInstance.interceptors.request.use(
+    (config) => config,
+    async (error) => Promise.reject(error)
+  );
+
+  axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const { config, response: { status } = {} } = error;
+      const originalRequest = config;
+
+      if (authState && status === 401) {
+        if (!originalRequest._retry) {
+          if (!isRefreshing) {
+            isRefreshing = true;
+            originalRequest._retry = true;
+
+            try {
+              const newToken = await refreshAccessToken();
+              axiosInstance.defaults.headers.Authorization = `Bearer ${newToken}`;
+              originalRequest.headers.Authorization = `Bearer ${newToken}`;
+              
+              // Resolve all pending requests with the new token
+              refreshSubscribers.forEach((callback: any) => callback(newToken));
+              refreshSubscribers = [];
+              return axiosInstance(originalRequest);
+            } catch (e) {
+              console.error(e);
+              return Promise.reject(e);
+            } finally {
+              isRefreshing = false;
+            }
+          }
+
+          return new Promise((resolve, reject) => {
+            addRefreshSubscriber((token: string) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(axiosInstance(originalRequest));
+            });
+          });
+        }
       }
 
-      return new Promise((resolve) => {
-        addRefreshSubscriber((token:string) => {
-          req.headers.Authorization = `Bearer ${token}`;
-          resolve(req);
-        });
-      });
-      }
+      return Promise.reject(error);
     }
-    console.log("Koniec intercepta")
-    return req;
-  });
+  );
 
   return axiosInstance;
 };
 
 export default useAxios;
+
+

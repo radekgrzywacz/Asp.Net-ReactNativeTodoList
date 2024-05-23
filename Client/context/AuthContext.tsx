@@ -4,6 +4,8 @@ import * as SecureStore from "expo-secure-store";
 import { Alert, Platform } from "react-native";
 import "core-js/stable/atob";
 import { jwtDecode } from "jwt-decode";
+import dayjs from "dayjs";
+
 
 interface AuthProps {
   authState?: {
@@ -66,6 +68,7 @@ export const AuthProvider = ({ children }: any) => {
               decodedToken[
                 "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
               ];
+            console.log( dayjs.unix(decodedToken["exp"]));
 
             setAuthState({
               token: tokens.accessToken,

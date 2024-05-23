@@ -45,7 +45,7 @@ public static class IdentityServiceExtensions
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-
+                    ClockSkew = TimeSpan.Zero,
                     // ValidIssuer = jwtSettings["validIssuer"],
                     // ValidAudience = jwtSettings["validAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.TokenKey))

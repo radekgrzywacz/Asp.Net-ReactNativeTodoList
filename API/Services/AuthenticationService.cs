@@ -119,7 +119,7 @@ public class AuthenticationService : IAuthenticationService
         var tokenOptions = new JwtSecurityToken
         (
             claims: claims,
-            expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtConfiguration.Expires)),
+            expires: DateTime.Now.AddSeconds(Convert.ToDouble(_jwtConfiguration.Expires)),
             signingCredentials: signingCredentials
         );
 

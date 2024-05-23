@@ -19,7 +19,7 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser(string id)
     {
-        var user = await _service.AppUserService.GetAppUser(id, trackChanges: false);
+         var user = await _service.AppUserService.GetAppUser(id, trackChanges: false);
 
         return Ok(user);
     }
