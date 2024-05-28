@@ -1,4 +1,5 @@
 using API.Data;
+using API.Helpers;
 using API.Interfaces;
 using API.Logging;
 using API.Services;
@@ -13,11 +14,8 @@ public static class ServiceExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
     {
-        services.AddDbContext<DataContext>(opt =>
-        {
-            opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
-        });
-        
+        services.AddDbContext<DataContext>(opt => { opt.UseSqlite(config.GetConnectionString("DefaultConnection")); });
+
         services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy", builder =>
@@ -27,20 +25,23 @@ public static class ServiceExtensions
                     .AllowAnyHeader();
             });
         });
-        
-        services.AddControllers(config =>
-        {
-            config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
-        });
+
+        var emailConfig = config.GetSection("EmailService").Get<EmailConfiguration>();
+
+        services.AddSingleton(emailConfig);
+
+        services.AddTransient<IEmailSender, EmailSender>();
+
+        services.AddControllers(config => { config.InputFormatters.Insert(0, GetJsonPatchInputFormatter()); });
 
         services.AddAutoMapper(typeof(Program));
-        
+
         services.AddSingleton<ILoggerManager, LoggerManager>();
 
         services.AddScoped<IRepositoryManager, RepositoryManager>();
 
         services.AddScoped<IServiceManager, ServiceManager>();
-        
+
 
         return services;
     }

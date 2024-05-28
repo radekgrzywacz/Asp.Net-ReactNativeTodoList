@@ -63,6 +63,7 @@ const ResetPassword = ({ navigation }) => {
           value={password}
           placeholder="New Password"
           onChangeText={(text: string) => setPassword(text)}
+          secureTextEntry={true}
         />
       </View>
       <View style={styles.textInputView}>
@@ -75,6 +76,7 @@ const ResetPassword = ({ navigation }) => {
           value={confirmPassword}
           placeholder="Confirm New Password"
           onChangeText={(text: string) => setConfirmPassword(text)}
+          secureTextEntry={true}
         />
       </View>
       <TouchableOpacity

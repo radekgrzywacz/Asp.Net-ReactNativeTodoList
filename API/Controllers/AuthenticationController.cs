@@ -1,6 +1,5 @@
 using API.DTOs;
 using API.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -10,10 +9,12 @@ namespace API.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly IServiceManager _service;
+    private readonly IEmailSender _emailSender;
 
-    public AuthenticationController(IServiceManager service)
+    public AuthenticationController(IServiceManager service, IEmailSender emailSender)
     {
         _service = service;
+        _emailSender = emailSender;
     }
 
     [HttpPost]
@@ -40,7 +41,7 @@ public class AuthenticationController : ControllerBase
         if (!await _service.AuthenticationService.ValidateUser(userForAuth)) return Unauthorized();
 
         var tokenDto = await _service.AuthenticationService.CreateToken(populateExp: true);
-        
+
         return Ok(tokenDto);
     }
 
@@ -51,7 +52,7 @@ public class AuthenticationController : ControllerBase
 
         return Ok(tokenToReturnDto);
     }
-    
+
     [HttpGet]
     public IActionResult Test2()
     {
@@ -64,5 +65,16 @@ public class AuthenticationController : ControllerBase
     {
         var response = new { Message = "Hello world" };
         return Ok(response);
+    }
+
+    [HttpGet("sendEmail")]
+    public async Task<IActionResult> SendEmail()
+    {
+        var receiver = "grzywaczra@gmail.com";
+        var subject = "Test";
+        var message = "Hello world";
+
+        await _emailSender.SendEmailAsync(receiver, subject, message);
+        return Ok();
     }
 }
