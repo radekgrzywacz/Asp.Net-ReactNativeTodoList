@@ -68,7 +68,6 @@ export const AuthProvider = ({ children }: any) => {
               decodedToken[
                 "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
               ];
-            console.log( dayjs.unix(decodedToken["exp"]));
 
             setAuthState({
               token: tokens.accessToken,
@@ -139,7 +138,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const logout = async () => {
     await SecureStore.deleteItemAsync(TOKEN_KEY);
-
+    console.log("in logout")
     axios.defaults.headers.common["Authorization"] = "";
 
     setAuthState({

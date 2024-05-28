@@ -61,7 +61,6 @@ const useAxios = () => {
     async (error) => {
       const { config, response: { status } = {} } = error;
       const originalRequest = config;
-
       if (authState && status === 401) {
         if (!originalRequest._retry) {
           if (!isRefreshing) {

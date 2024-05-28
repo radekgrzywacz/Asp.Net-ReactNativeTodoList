@@ -340,14 +340,8 @@ const styles = StyleSheet.create({
     fontSize: 40,
   },
   upcomingTodosContainer: {
-    //backgroundColor:"#e6e6e6",
     padding: 10,
-    //borderRadius: 10,
-    //borderWidth: 2,
-    //borderColor: "#627254",
     marginTop: "5%",
-    // alignItems: "center",
-    // justifyContent: "center",
   },
   upcomingTodosText: {
     marginBottom: 6,

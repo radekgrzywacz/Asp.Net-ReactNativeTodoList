@@ -20,7 +20,7 @@ const AppNav = () => {
   return (
     <NavigationContainer>
       <StatusBar backgroundColor="#EEEEEE" barStyle="default" />
-      {authState?.authenticated ? <DrawerNav /> : <AuthNavigator />}
+      {authState?.authenticated ? <DrawerNav  /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };

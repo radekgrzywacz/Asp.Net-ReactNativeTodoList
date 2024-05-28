@@ -48,7 +48,6 @@ const Register = ({ navigation }) => {
     if (result && result.error) {
       const errorMessagesArray = parseErrorMessages(result.msg.data);
       setErrorMessages(errorMessagesArray);
-      Alert.alert("Registration Error", errorMessages.join("\n"));
     } else {
       login();
     }
@@ -220,14 +219,13 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
-    //flex: 1, // Change to flex: 1
     marginBottom: "60%",
   },
   registerInput: {
     flexDirection: "row",
     borderColor: "#627254",
     borderWidth: 2,
-    width: "65%",
+    width: "75%",
     borderRadius: 20,
     padding: 8,
     justifyContent: "center",
@@ -243,7 +241,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: "#76885B",
     backgroundColor: "#76885B",
-    width: "40%",
+    width: "75%",
     height: "10%",
     alignItems: "center",
     justifyContent: "center",
@@ -284,15 +282,12 @@ const styles = StyleSheet.create({
   errorContainer: {
     position: "absolute",
     top: "104%",
-    //marginTop: 10,
     padding: 10,
-    //backgroundColor: "#f8d7da",
     borderRadius: 10,
     width: "80%",
     alignItems: "center",
   },
   errorText: {
-    //color: "#721c24",
     color: "black",
     fontFamily: "regular",
     fontSize: 14,

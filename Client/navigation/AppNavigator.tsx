@@ -23,7 +23,7 @@ function isSameDay(date1: Date, date2: Date) {
   );
 }
 
-const AppNavigator = ({ navigation }) => {
+const AppNavigator = ({ navigation }: { navigation: any}) => {
   const { onLogout, authState } = useAuth();
   const [isUpdated, setIsUpdated] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -94,7 +94,7 @@ const AppNavigator = ({ navigation }) => {
           <GestureHandlerRootView>
             <TouchableOpacity
               style={{ marginRight: 15, top: 9 }}
-              onPress={() => navigation.openDrawer()}
+              onPress={() => navigation.toggleDrawer()}
             >
               <Ionicons name="settings-outline" size={25} color={"white"} />
             </TouchableOpacity>

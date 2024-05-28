@@ -106,7 +106,7 @@ const LoginScreen = ({ navigation }) => {
           />
         </View>
         <TouchableOpacity
-          onPress={() => console.log("go to forgot password screen")}
+          onPress={() => navigation.navigate("ForgotPassword")}
         >
           <Text
             style={styles.text}
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderColor: "#627254",
     borderWidth: 2,
-    width: "65%",
+    width: "75%",
     borderRadius: 20,
     padding: 8,
     justifyContent: "center",
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: "#76885B",
     backgroundColor: "#76885B",
-    width: "40%",
+    width: "75%",
     height: "10%",
     alignItems: "center",
     justifyContent: "center",
@@ -235,16 +235,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   signinButton: {
-    //borderWidth: 2,
     borderRadius: 20,
-    //borderColor: "#76885B",
-    //backgroundColor: "#EEEEEE",
     width: "40%",
     height: "10%",
     alignItems: "center",
     justifyContent: "center",
-    //padding: 4,
-    //marginTop: 4,
     ...Platform.select({
       ios: {
         shadowOffset: {
