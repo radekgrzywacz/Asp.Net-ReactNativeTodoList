@@ -11,7 +11,15 @@ import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const ForgotPassword = ({ navigation }) => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("grzywaczra@gmail.com");
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+  const [isEmailValid, setIsEmailValid] = useState(true);
 
   return (
     <View style={styles.container}>
@@ -55,10 +63,20 @@ const ForgotPassword = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={styles.submitButton}
-        onPress={() => navigation.navigate("ResetPassword")}
+        onPress={() => {
+          if (validateEmail(email)) {
+            setIsEmailValid(true);
+            navigation.navigate("ResetPassword");
+          } else {
+            setIsEmailValid(false);
+          }
+        }}
       >
         <Text style={styles.submitButtonText}>Reset Password</Text>
       </TouchableOpacity>
+      {!isEmailValid && (
+        <Text style={styles.errorText}>{`\u2022 Please provide vaild email`}</Text>
+      )}
     </View>
   );
 };
@@ -184,5 +202,12 @@ const styles = StyleSheet.create({
     fontFamily: "medium",
     color: "#EEEEEE",
     fontSize: 18,
+  },
+  errorText: {
+    color: "black",
+    fontFamily: "regular",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 10,
   },
 });

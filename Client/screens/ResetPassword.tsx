@@ -13,6 +13,7 @@ const ResetPassword = ({ navigation }) => {
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [areInputsEmpty, setAreInputsEmpty] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -78,7 +79,18 @@ const ResetPassword = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={styles.submitButton}
-        onPress={() => console.log("submit reset")}
+        onPress={() => {
+          if (
+            verificationCode.length === 0 ||
+            password.length === 0 ||
+            confirmPassword.length === 0
+          ) {
+            setAreInputsEmpty(true);
+          } else {
+            console.log("submitted");
+            setAreInputsEmpty(false);
+          }
+        }}
       >
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
@@ -88,6 +100,11 @@ const ResetPassword = ({ navigation }) => {
       >
         <Text style={styles.resendButtonText}>Resend Code</Text>
       </TouchableOpacity>
+      {areInputsEmpty && (
+        <Text
+          style={[styles.errorText, {marginTop: 7}]}
+        >{`\u2022 Please, don't leave empty fields`}</Text>
+      )}
     </View>
   );
 };
@@ -222,6 +239,20 @@ const styles = StyleSheet.create({
     fontFamily: "medium",
     color: "#76885B",
     fontSize: 18,
+    textAlign: "center",
+  },
+  errorContainer: {
+    position: "absolute",
+    top: "104%",
+    padding: 10,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "black",
+    fontFamily: "regular",
+    fontSize: 14,
     textAlign: "center",
   },
 });

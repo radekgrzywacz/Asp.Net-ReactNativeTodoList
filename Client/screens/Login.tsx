@@ -265,15 +265,12 @@ const styles = StyleSheet.create({
   errorContainer: {
     position: "absolute",
     top: "104%",
-    //marginTop: 10,
     padding: 10,
-    //backgroundColor: "#f8d7da",
     borderRadius: 10,
     width: "80%",
     alignItems: "center",
   },
   errorText: {
-    //color: "#721c24",
     color: "black",
     fontFamily: "regular",
     fontSize: 14,
