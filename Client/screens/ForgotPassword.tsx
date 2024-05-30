@@ -6,12 +6,17 @@ import {
   Platform,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import axios from "axios";
+import { API_URL } from "../context/AuthContext";
 
 const ForgotPassword = ({ navigation }) => {
   const [email, setEmail] = useState("grzywaczra@gmail.com");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const validateEmail = (email: string) => {
     return String(email)
       .toLowerCase()
@@ -19,7 +24,41 @@ const ForgotPassword = ({ navigation }) => {
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       );
   };
-  const [isEmailValid, setIsEmailValid] = useState(true);
+
+  const handleSubmit = async (email: string) => {
+    try {
+      setLoading(true);
+      const data = {
+        email: email,
+      };
+      await axios
+        .post(`${API_URL}/authentication/sendEmail`, data)
+        .then((response) => {
+          console.log(response.status);
+          if (response.status === 200) {
+            navigation.navigate("ResetPassword", { email: email });
+            setError("");
+            setLoading(false);
+          } else {
+            setError(
+              "There was an issue reseting your password, please try again"
+            );
+            setLoading(false);
+          }
+        });
+    } catch (error) {
+      console.log("ERROR: ", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingIndicator}>
+        <ActivityIndicator size="large" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -65,17 +104,19 @@ const ForgotPassword = ({ navigation }) => {
         style={styles.submitButton}
         onPress={() => {
           if (validateEmail(email)) {
-            setIsEmailValid(true);
-            navigation.navigate("ResetPassword");
+            handleSubmit(email);
+            console.log("Submitted");
           } else {
-            setIsEmailValid(false);
+            setError("Please provide valid email address");
           }
         }}
       >
         <Text style={styles.submitButtonText}>Reset Password</Text>
       </TouchableOpacity>
-      {!isEmailValid && (
-        <Text style={styles.errorText}>{`\u2022 Please provide vaild email`}</Text>
+      {error.length > 0 && (
+        <Text
+          style={styles.errorText}
+        >{`\u2022 Please provide vaild email`}</Text>
       )}
     </View>
   );
@@ -209,5 +250,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     marginTop: 10,
+  },
+  loadingIndicator: {
+    flex: 1,
+    backgroundColor: "#EEEEEE",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 5,
+    paddingBottom: 10,
+    paddingRight: 10,
+    paddingLeft: 10,
   },
 });

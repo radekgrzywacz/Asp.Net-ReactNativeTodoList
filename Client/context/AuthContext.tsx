@@ -21,6 +21,7 @@ interface AuthProps {
   ) => Promise<any>;
   onLogin?: (username: string, password: string) => Promise<any>;
   onLogout?: () => Promise<any>;
+  
 }
 
 export interface DecodedToken {

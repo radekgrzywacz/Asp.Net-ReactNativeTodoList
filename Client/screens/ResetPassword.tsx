@@ -9,11 +9,12 @@ import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TextInput } from "react-native-gesture-handler";
 
-const ResetPassword = ({ navigation }) => {
+const ResetPassword = ({ route, navigation }) => {
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [areInputsEmpty, setAreInputsEmpty] = useState(false);
+  const {email} = route.params;
 
   return (
     <View style={styles.container}>
