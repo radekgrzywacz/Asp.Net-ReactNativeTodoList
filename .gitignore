@@ -484,6 +484,7 @@ $RECYCLE.BIN/
 *.swp
 
 API/appsettings.json
+API/appsettings.Development.json
 .editorconfig
 API/todoapp.db-shm
 API/todoapp.db-wal

@@ -14,13 +14,13 @@ public sealed class ServiceManager : IServiceManager
     private readonly Lazy<IAuthenticationService> _authenticationService;
 
     public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper,
-        UserManager<AppUser> userManager, IOptions<JwtConfiguration> configuration)
+        UserManager<AppUser> userManager, IOptions<JwtConfiguration> configuration, IEmailSender emailSender)
     {
         _todoService = new Lazy<ITodoService>(() => new TodoService(repositoryManager, logger, mapper, userManager));
         _appUserService = new Lazy<IAppUserService>(() => new AppUserService(repositoryManager, logger, mapper));
         _authenticationService =
             new Lazy<IAuthenticationService>(
-                () => new AuthenticationService(logger, mapper, userManager, configuration));
+                () => new AuthenticationService(logger, mapper, userManager, configuration, emailSender));
     }
 
     public IAppUserService AppUserService => _appUserService.Value;

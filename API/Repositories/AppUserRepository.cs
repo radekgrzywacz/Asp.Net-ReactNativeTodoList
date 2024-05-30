@@ -15,5 +15,5 @@ public class AppUserRepository : RepositoryBase<AppUser> , IAppUserRepository
 
     public async Task<AppUser> GetAppUser(string appUserId, bool trackChanges) =>
         await FindByCondition(u => u.Id.Equals(appUserId), trackChanges).SingleOrDefaultAsync();
-
+    
 }

@@ -9,12 +9,10 @@ namespace API.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly IServiceManager _service;
-    private readonly IEmailSender _emailSender;
 
-    public AuthenticationController(IServiceManager service, IEmailSender emailSender)
+    public AuthenticationController(IServiceManager service)
     {
         _service = service;
-        _emailSender = emailSender;
     }
 
     [HttpPost]
@@ -67,14 +65,11 @@ public class AuthenticationController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("sendEmail")]
-    public async Task<IActionResult> SendEmail()
+    [HttpPost("sendEmail")]
+    public async Task<IActionResult> SendEmail([FromBody] EmailForResetDto email)
     {
-        var receiver = "grzywaczra@gmail.com";
-        var subject = "Test";
-        var message = "Hello world";
+        await _service.AuthenticationService.SendEmailWithResetTokenAsync(email);
 
-        await _emailSender.SendEmailAsync(receiver, subject, message);
         return Ok();
     }
 }
