@@ -14,28 +14,27 @@ public class EmailSender : IEmailSender
         _emailConfiguration = emailConfiguration;
     }
 
-    public Task SendEmailAsync(string email, string subject, string message)
-    {
-        var mail = _emailConfiguration.AppEmail;
-        var pw = _emailConfiguration.AppEmailPassword;
+    // public Task SendEmailAsync(string email, string subject, string message)
+    // {
+    //     var mail = _emailConfiguration.AppEmail;
+    //     var pw = _emailConfiguration.AppEmailPassword;
+    //
+    //     var client = new SmtpClient("smtp.gmail.com", 587)
+    //     {
+    //         EnableSsl = true,
+    //         Credentials = new NetworkCredential(mail, pw)
+    //     };
+    //
+    //     return client.SendMailAsync(
+    //         new MailMessage(
+    //             from: mail,
+    //             to: email,
+    //             subject,
+    //             message
+    //         ));
+    // }
 
-        var client = new SmtpClient("smtp.gmail.com", 587)
-        {
-            EnableSsl = true,
-            Credentials = new NetworkCredential(mail, pw)
-        };
-
-        return client.SendMailAsync(
-            new MailMessage(
-                from: mail,
-                to: email,
-                subject,
-                message
-            ));
-    }
-
-    public bool SendEmail(string to, string toName, string from, string fromName, string subject,
-        string body, bool isBodyHtml)
+    public async Task<bool> SendEmailAsync(string to, string toName, string from, string fromName, string subject, string body, bool isBodyHtml)
     {
         var mail = _emailConfiguration.AppEmail;
         var pw = _emailConfiguration.AppEmailPassword;
@@ -61,7 +60,7 @@ public class EmailSender : IEmailSender
                        BodyEncoding = System.Text.Encoding.UTF8,
                    })
             {
-                smtp.Send(message);
+                await smtp.SendMailAsync(message);
             }
 
             return true;
@@ -71,4 +70,5 @@ public class EmailSender : IEmailSender
             return false;
         }
     }
+
 }

@@ -8,13 +8,31 @@ import {
 import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TextInput } from "react-native-gesture-handler";
+import { API_URL } from "../context/AuthContext";
+import axios from "axios";
 
 const ResetPassword = ({ route, navigation }) => {
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [areInputsEmpty, setAreInputsEmpty] = useState(false);
-  const {email} = route.params;
+  const { email } = route.params;
+
+  const handleReset = async () => {
+    try {
+      const data = {
+        userEmail: email,
+        resetToken: verificationCode,
+        password: password,
+      };
+
+      axios.post(`${API_URL}/authentication/reset`, data).then((response) => {
+        console.log(response.status);
+      });
+    } catch (error) {
+        console.log("Error with password reset: ", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -90,6 +108,7 @@ const ResetPassword = ({ route, navigation }) => {
           ) {
             setAreInputsEmpty(true);
           } else {
+            handleReset();
             console.log("submitted");
             setAreInputsEmpty(false);
           }
@@ -105,7 +124,7 @@ const ResetPassword = ({ route, navigation }) => {
       </TouchableOpacity>
       {areInputsEmpty && (
         <Text
-          style={[styles.errorText, {marginTop: 7}]}
+          style={[styles.errorText, { marginTop: 7 }]}
         >{`\u2022 Please, don't leave empty fields`}</Text>
       )}
     </View>

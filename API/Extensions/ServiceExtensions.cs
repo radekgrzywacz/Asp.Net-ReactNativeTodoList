@@ -27,7 +27,6 @@ public static class ServiceExtensions
         });
 
         var emailConfig = config.GetSection("EmailService").Get<EmailConfiguration>();
-
         services.AddSingleton(emailConfig);
 
         services.AddTransient<IEmailSender, EmailSender>();

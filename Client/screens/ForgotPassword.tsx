@@ -32,7 +32,7 @@ const ForgotPassword = ({ navigation }) => {
         email: email,
       };
       await axios
-        .post(`${API_URL}/authentication/sendEmail`, data)
+        .post(`${API_URL}/authentication/email`, data)
         .then((response) => {
           console.log(response.status);
           if (response.status === 200) {

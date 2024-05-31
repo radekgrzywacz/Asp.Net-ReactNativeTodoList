@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Entities.ConfigurationModels;
@@ -23,22 +24,24 @@ public class AuthenticationService : IAuthenticationService
     private readonly UserManager<AppUser> _userManager;
     private readonly IOptions<JwtConfiguration> _config;
     private readonly IEmailSender _emailSender;
+    private readonly EmailConfiguration _emailConfiguration;
     private readonly JwtConfiguration _jwtConfiguration;
 
     private AppUser _user;
 
     public AuthenticationService(ILoggerManager logger, IMapper mapper, UserManager<AppUser> userManager,
-        IOptions<JwtConfiguration> config, IEmailSender emailSender)
+        IOptions<JwtConfiguration> config, IEmailSender emailSender, EmailConfiguration emailConfiguration)
     {
         _logger = logger;
         _mapper = mapper;
         _userManager = userManager;
         _config = config;
         _emailSender = emailSender;
+        _emailConfiguration = emailConfiguration;
         _jwtConfiguration = _config.Value;
     }
 
-    public async Task<IdentityResult> RegisterUser(AppUserForRegistrationDto userForRegistration)
+    public async Task<IdentityResult> RegisterUserAsync(AppUserForRegistrationDto userForRegistration)
     {
         var user = _mapper.Map<AppUser>(userForRegistration);
 
@@ -47,20 +50,20 @@ public class AuthenticationService : IAuthenticationService
         return result;
     }
 
-    public async Task<bool> ValidateUser(AppUserForAuthenticationDto userForAuth)
+    public async Task<bool> ValidateUserAsync(AppUserForAuthenticationDto userForAuth)
     {
         _user = await _userManager.FindByNameAsync(userForAuth.UserName);
 
         var result = (_user != null && await _userManager.CheckPasswordAsync(_user, userForAuth.Password));
         if (!result)
         {
-            _logger.LogWarn($"{nameof(ValidateUser)} : Authentication failed. Wrong username or password");
+            _logger.LogWarn($"{nameof(ValidateUserAsync)} : Authentication failed. Wrong username or password");
         }
 
         return result;
     }
 
-    public async Task<TokenDto> CreateToken(bool populateExp)
+    public async Task<TokenDto> CreateTokenAsync(bool populateExp)
     {
         var signingCredentials = GetSigningCredentials();
         var claims = GetClaims();
@@ -79,7 +82,7 @@ public class AuthenticationService : IAuthenticationService
         return new TokenDto(accessToken, refreshToken);
     }
 
-    public async Task<TokenDto> RefreshToken(TokenDto tokenDto)
+    public async Task<TokenDto> RefreshTokenAsync(TokenDto tokenDto)
     {
         var principal = GetPrincipalFromExpiredToken(tokenDto.AccessToken);
 
@@ -97,12 +100,34 @@ public class AuthenticationService : IAuthenticationService
 
         _user = user;
 
-        return await CreateToken(populateExp: false);
+        return await CreateTokenAsync(populateExp: false);
     }
 
-    //public async Task ResetPasswordAsync() TODO:
+    public async Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordInfo)
+    {
+        var user = await _userManager.FindByEmailAsync(resetPasswordInfo.UserEmail);
+        if (user == null)
+        {
+            throw new UserEmailNotFoundException(resetPasswordInfo.UserEmail);
+        }
 
-    public async Task SendEmailWithResetTokenAsync(EmailForResetDto email)
+        if (user.ResetPasswordToken != resetPasswordInfo.ResetToken ||
+            user.ResetPasswordTokenExpiryTime <= DateTime.Now)
+        {
+            throw new ResetTokenBadRequest();
+        }
+
+        var passwordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, passwordToken, resetPasswordInfo.Password);
+        if (result.Succeeded)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SendEmailWithResetTokenAsync(EmailForResetDto email)
     {
         var user = await _userManager.FindByEmailAsync(email.Email);
         if (user == null)
@@ -112,24 +137,41 @@ public class AuthenticationService : IAuthenticationService
 
         var resetToken = GenerateResetToken();
 
+
+        if (resetToken != null)
+        {
+            user.ResetPasswordToken = resetToken;
+            user.ResetPasswordTokenExpiryTime =
+                DateTime.Now.AddMinutes(Convert.ToDouble(_emailConfiguration.ResetTokenExpires));
+            await _userManager.UpdateAsync(user);
+        }
+
+
         var subject = "The Ultimate Todo App password reset";
         var message =
             $"Hi {user.UserName}! <br>To reset your password, please, use this token in your mobile app: <b>{resetToken}</b>." +
-            $"<br>If you did not request password reset, please ignore this message. ";
+            $"<br>If you did not request password reset, please ignore this message. <br><br> Remember, that this token is valid " +
+            $"only for 30 minutes. After that you will have to get a new one";
 
         //await _emailSender.SendEmailAsync(email.Email, subject, message);
-        var result =  _emailSender.SendEmail(user.Email, user.UserName, "grzywaczra@gmail.com",
+        var result = await _emailSender.SendEmailAsync(user.Email, user.UserName, "grzywaczra@gmail.com",
             "The Ultimate Todo App", subject, message, true);
+
+        return result;
     }
 
     private string GenerateResetToken()
     {
-        var randomNumber = new byte[5];
-        using (var rng = RandomNumberGenerator.Create())
+        const int length = 5;
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var random = new Random();
+        char[] result = new char[length];
+        for (int i = 0; i < length; i++)
         {
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
+            result[i] = chars[random.Next(chars.Length)];
         }
+
+        return new string(result);
     }
 
     private SigningCredentials GetSigningCredentials()
@@ -155,7 +197,7 @@ public class AuthenticationService : IAuthenticationService
         var tokenOptions = new JwtSecurityToken
         (
             claims: claims,
-            expires: DateTime.Now.AddSeconds(Convert.ToDouble(_jwtConfiguration.Expires)),
+            expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtConfiguration.Expires)),
             signingCredentials: signingCredentials
         );
 

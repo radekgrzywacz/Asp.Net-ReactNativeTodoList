@@ -18,7 +18,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> RegisterUser([FromBody] AppUserForRegistrationDto appUserForRegistration)
     {
-        var result = await _service.AuthenticationService.RegisterUser(appUserForRegistration);
+        var result = await _service.AuthenticationService.RegisterUserAsync(appUserForRegistration);
 
         if (!result.Succeeded)
         {
@@ -36,9 +36,9 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Authenticate([FromBody] AppUserForAuthenticationDto userForAuth)
     {
-        if (!await _service.AuthenticationService.ValidateUser(userForAuth)) return Unauthorized();
+        if (!await _service.AuthenticationService.ValidateUserAsync(userForAuth)) return Unauthorized();
 
-        var tokenDto = await _service.AuthenticationService.CreateToken(populateExp: true);
+        var tokenDto = await _service.AuthenticationService.CreateTokenAsync(populateExp: true);
 
         return Ok(tokenDto);
     }
@@ -46,7 +46,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] TokenDto tokenDto)
     {
-        var tokenToReturnDto = await _service.AuthenticationService.RefreshToken(tokenDto);
+        var tokenToReturnDto = await _service.AuthenticationService.RefreshTokenAsync(tokenDto);
 
         return Ok(tokenToReturnDto);
     }
@@ -65,11 +65,23 @@ public class AuthenticationController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("sendEmail")]
+    [HttpPost("email")]
     public async Task<IActionResult> SendEmail([FromBody] EmailForResetDto email)
     {
-        await _service.AuthenticationService.SendEmailWithResetTokenAsync(email);
+        bool emailSent = await _service.AuthenticationService.SendEmailWithResetTokenAsync(email);
 
-        return Ok();
+        if (emailSent) return Ok();
+
+        return BadRequest("There was an issue sending an email");
+    }
+
+    [HttpPost("reset")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+    {
+        var result = await _service.AuthenticationService.ResetPasswordAsync(resetPasswordDto);
+
+        if (result) return Ok();
+
+        return BadRequest("Something went wrong with resetting your password");
     }
 }

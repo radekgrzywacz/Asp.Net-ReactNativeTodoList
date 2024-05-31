@@ -5,9 +5,10 @@ namespace API.Interfaces;
 
 public interface IAuthenticationService
 {
-    Task<IdentityResult> RegisterUser(AppUserForRegistrationDto userForRegistration);
-    Task<bool> ValidateUser(AppUserForAuthenticationDto userForAuth);
-    Task<TokenDto> CreateToken(bool populateExp);
-    Task<TokenDto> RefreshToken(TokenDto tokenDto);
-    Task SendEmailWithResetTokenAsync(EmailForResetDto email);
+    Task<IdentityResult> RegisterUserAsync(AppUserForRegistrationDto userForRegistration);
+    Task<bool> ValidateUserAsync(AppUserForAuthenticationDto userForAuth);
+    Task<TokenDto> CreateTokenAsync(bool populateExp);
+    Task<TokenDto> RefreshTokenAsync(TokenDto tokenDto);
+    Task<bool> SendEmailWithResetTokenAsync(EmailForResetDto email);
+    Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordInfo);
 }
