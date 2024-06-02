@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -15,23 +16,53 @@ const ResetPassword = ({ route, navigation }) => {
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [areInputsEmpty, setAreInputsEmpty] = useState(false);
+  const [error, setError] = useState("");
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const { email } = route.params;
 
-  const handleReset = async () => {
-    try {
-      const data = {
-        userEmail: email,
-        resetToken: verificationCode,
-        password: password,
-      };
-
-      axios.post(`${API_URL}/authentication/reset`, data).then((response) => {
-        console.log(response.status);
+  const parseErrorMessages = (errorResponse: []): string[] => {
+    const errors: string[] = [];
+    if (
+      verificationCode.length === 0 ||
+      password.length === 0 ||
+      confirmPassword.length === 0
+    ) {
+      errors.push("Please, don't leave empty fields");
+    } else if (password !== confirmPassword) {
+      errors.push("Provided passwords are not the same.");
+    } else {
+      errorResponse.forEach((error) => {
+        errors.push(error["description"]);
       });
-    } catch (error) {
-        console.log("Error with password reset: ", error);
     }
+    return errors;
+  };
+
+  const handleReset = async () => {
+    const data = {
+      userEmail: email,
+      resetToken: verificationCode,
+      password: password,
+    };
+
+    axios
+      .post(`${API_URL}/authentication/reset`, data)
+      .catch((error) => {
+        console.log(error.response.data);
+        const errorMessagesArray = parseErrorMessages(error.response.data);
+        setErrorMessages(errorMessagesArray);
+        console.log("errors:", errorMessages);
+      })
+      .then((response) => {
+        console.log(response.status);
+        if (response.status === 200) {
+          navigation.navigate("Login");
+        } else {
+          setErrorMessages([
+            "There was a problem with resetting your password.",
+          ]);
+        }
+      });
   };
 
   return (
@@ -82,7 +113,7 @@ const ResetPassword = ({ route, navigation }) => {
           value={password}
           placeholder="New Password"
           onChangeText={(text: string) => setPassword(text)}
-          secureTextEntry={true}
+          secureTextEntry={false}
         />
       </View>
       <View style={styles.textInputView}>
@@ -95,22 +126,23 @@ const ResetPassword = ({ route, navigation }) => {
           value={confirmPassword}
           placeholder="Confirm New Password"
           onChangeText={(text: string) => setConfirmPassword(text)}
-          secureTextEntry={true}
+          secureTextEntry={false}
         />
       </View>
       <TouchableOpacity
         style={styles.submitButton}
         onPress={() => {
+          setErrorMessages([]);
           if (
             verificationCode.length === 0 ||
             password.length === 0 ||
             confirmPassword.length === 0
           ) {
-            setAreInputsEmpty(true);
+            setErrorMessages(["Please, don't leave empty fields"]);
+          } else if (password !== confirmPassword) {
+            setErrorMessages(["Provided passwords are not the same."]);
           } else {
             handleReset();
-            console.log("submitted");
-            setAreInputsEmpty(false);
           }
         }}
       >
@@ -122,10 +154,15 @@ const ResetPassword = ({ route, navigation }) => {
       >
         <Text style={styles.resendButtonText}>Resend Code</Text>
       </TouchableOpacity>
-      {areInputsEmpty && (
-        <Text
-          style={[styles.errorText, { marginTop: 7 }]}
-        >{`\u2022 Please, don't leave empty fields`}</Text>
+      {errorMessages.length > 0 && (
+        <View style={styles.errorContainer}>
+          <FlatList
+            data={errorMessages}
+            renderItem={({ item }) => {
+              return <Text style={styles.errorText}>{`\u2022 ${item}`}</Text>;
+            }}
+          />
+        </View>
       )}
     </View>
   );
@@ -264,8 +301,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   errorContainer: {
-    position: "absolute",
-    top: "104%",
+    //position: "absolute",
+    //top: "104%",
     padding: 10,
     borderRadius: 10,
     width: "80%",

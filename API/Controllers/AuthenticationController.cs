@@ -80,8 +80,8 @@ public class AuthenticationController : ControllerBase
     {
         var result = await _service.AuthenticationService.ResetPasswordAsync(resetPasswordDto);
 
-        if (result) return Ok();
+        if (result.Succeeded) return Ok();
 
-        return BadRequest("Something went wrong with resetting your password");
+        return BadRequest(result.Errors);
     }
 }

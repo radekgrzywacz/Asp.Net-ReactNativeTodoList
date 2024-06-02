@@ -1,5 +1,6 @@
 using API.DTOs;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Interfaces;
 
@@ -10,5 +11,5 @@ public interface IAuthenticationService
     Task<TokenDto> CreateTokenAsync(bool populateExp);
     Task<TokenDto> RefreshTokenAsync(TokenDto tokenDto);
     Task<bool> SendEmailWithResetTokenAsync(EmailForResetDto email);
-    Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordInfo);
+    Task<IdentityResult> ResetPasswordAsync(ResetPasswordDto resetPasswordInfo);
 }

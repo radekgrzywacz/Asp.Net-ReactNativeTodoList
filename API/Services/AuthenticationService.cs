@@ -11,6 +11,7 @@ using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -103,7 +104,7 @@ public class AuthenticationService : IAuthenticationService
         return await CreateTokenAsync(populateExp: false);
     }
 
-    public async Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordInfo)
+    public async Task<IdentityResult> ResetPasswordAsync(ResetPasswordDto resetPasswordInfo)
     {
         var user = await _userManager.FindByEmailAsync(resetPasswordInfo.UserEmail);
         if (user == null)
@@ -119,12 +120,15 @@ public class AuthenticationService : IAuthenticationService
 
         var passwordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, passwordToken, resetPasswordInfo.Password);
+
         if (result.Succeeded)
         {
-            return true;
+            user.ResetPasswordTokenExpiryTime = DateTime.Now;
+            await _userManager.UpdateAsync(user);
         }
 
-        return false;
+        return result;
+
     }
 
     public async Task<bool> SendEmailWithResetTokenAsync(EmailForResetDto email)
